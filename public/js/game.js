@@ -1,8 +1,8 @@
 const config = {
   type: Phaser.AUTO,
   parent: 'phaser-example',
-  width: 800,
-  height: 600,
+  width: 1600,
+  height: 1200,
   physics: {
     default: 'arcade',
     arcade: {
@@ -19,17 +19,60 @@ const config = {
 
 const game = new Phaser.Game(config);
 function preload() {
-  this.load.image('player', 'assets/spaceShips_001.png');
+  this.load.image('player', 'assets/sprites/player_placeholder.png');
   this.load.image('otherPlayer', 'assets/enemyBlack5.png');
   this.load.image('star', 'assets/star_gold.png');
-
-
+  this.load.image('stage_one', 'assets/tiles/foxgate-city-day.png')
+  this.load.image('stage_one_platform_ground', 'assets/tiles/foxgate-city-day-platform.PNG' )
+  this.load.image('stage_one_platform_roof-1', 'assets/tiles/foxgate-city-day-platform-roof-1.PNG' )
+  this.load.image('stage_one_platform_roof-2', 'assets/tiles/foxgate-city-day-platform-roof-2.PNG' )
 }
 
 function create() {
   const player = this.physics.add.sprite(350, 0, 'player'); 
   const self = this;
   this.socket = io();
+
+  // Background image 
+  const backgroundImage = this.add.image(0, 0, 'stage_one').setOrigin(0)
+
+  // Adjust the scale of the image to fit the screen
+  const screenWidth = this.cameras.main.width;
+  const screenHeight = this.cameras.main.height;
+  const scaleRatio = Math.max(screenWidth / backgroundImage.width, screenHeight / backgroundImage.height);
+  backgroundImage.setScale(scaleRatio);
+
+  // Center the image on the screen
+  backgroundImage.setPosition(0, 0);
+
+  //
+  // Platforms
+  //
+  // Add event listener to the game canvas
+  this.input.on('pointermove', function(pointer) {
+    console.log('Mouse Position:', pointer.x, pointer.y);
+  });
+  // Create groups for different platform types
+  this.platformsGround = this.physics.add.staticGroup();
+  this.platformsRoof1 = this.physics.add.staticGroup();
+  this.platformsRoof2 = this.physics.add.staticGroup();
+
+  // Create individual platforms and add them to their respective groups
+  const platformGround = this.platformsGround.create(100, 100, 'stage_one_platform_ground');
+  // Adjust the values of x and y to position the platform
+
+  const platformRoof1 = this.platformsRoof1.create(200, 200, 'stage_one_platform_roof-1');
+  // Adjust the values of x and y to position the platform
+
+  const platformRoof2 = this.platformsRoof2.create(300, 300, 'stage_one_platform_roof-2');
+  // Adjust the values of x and y to position the platform
+
+  // Enable collision between the player and different platform groups
+  this.physics.add.collider(player, this.platformsGround);
+  this.physics.add.collider(player, this.platformsRoof1);
+  this.physics.add.collider(player, this.platformsRoof2);
+
+
   this.otherPlayers = this.physics.add.group();
 
   // // Players joining
