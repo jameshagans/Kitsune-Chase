@@ -20,39 +20,35 @@ const config = {
 const game = new Phaser.Game(config);
 function preload() {
   // this.load.image('player', 'assets/sprites/player_placeholder.png');
-  this.load.atlas('fox', '../assets/sprites/fox.png', '../assets/sprites/fox.json')
+  this.load.atlas('fox', '../assets/sprites/fox.png', '../assets/sprites/fox.json');
   this.load.image('otherPlayer', 'assets/enemyBlack5.png');
   this.load.image('star', 'assets/star_gold.png');
-  this.load.image('stage_one', 'assets/tiles/foxgate-city-day.png')
-  this.load.image('stage_one_platform_ground', 'assets/tiles/foxgate-city-day-platform.PNG' )
-  this.load.image('stage_one_platform_roof-1-pink', 'assets/tiles/foxgate-city-day-platform-roof-1-pink.PNG' )
-  this.load.image('stage_one_platform_roof-2-orange', 'assets/tiles/foxgate-city-day-platform-roof-2-orange.PNG' )
+  this.load.image('stage_one', 'assets/tiles/foxgate-city-day.png');
+  this.load.image('stage_one_platform_ground', 'assets/tiles/foxgate-city-day-platform.PNG');
+  this.load.image('stage_one_platform_roof-1-pink', 'assets/tiles/foxgate-city-day-platform-roof-1-pink.PNG');
+  this.load.image('stage_one_platform_roof-2-orange', 'assets/tiles/foxgate-city-day-platform-roof-2-orange.PNG');
 }
 
 function create() {
-
-  this.timerSeconds = 120; // 2 minutes in seconds
-  this.timerText = this.add.text(300, 16, '', { fontSize: '32px', fill: '#fff' });
-
-  this.timer = setInterval(() => {
-    this.timerSeconds--;
-
-    this.timerText.setText('Time: ' + this.timerSeconds);
-
-    if (this.timerSeconds <= 0) {
-      alert('Game Over!!')
-      //handleGameOver();
-      clearInterval(this.timer); // Stop the timer
-    }
-  }, 1000); // Update the timer every second (1000 milliseconds)
 
   //const player = this.physics.add.sprite(350, 0, 'player'); 
   const self = this;
   this.socket = io();
   this.cursors = this.input.keyboard.createCursorKeys();
 
+     // Players joining
+    //  this.socket.on('currentPlayers', function(players) {
+    //   Object.keys(players).forEach(function(id) {
+    //     if (players[id].playerId === self.socket.id) {
+    //       addPlayer(self, players[id]);
+    //     } else {
+    //       addOtherPlayers(self, players[id]);
+    //     }
+    //   });
+    // });
+
   // Background image 
-  const backgroundImage = this.add.image(0, 0, 'stage_one').setOrigin(0)
+  const backgroundImage = this.add.image(0, 0, 'stage_one').setOrigin(0);
 
   // Adjust the scale of the image to fit the screen
   const screenWidth = this.cameras.main.width;
@@ -63,11 +59,28 @@ function create() {
   // Center the image on the screen
   backgroundImage.setPosition(0, 0);
 
+
+  this.timerSeconds = 120; // 2 minutes in seconds
+  this.timerText = this.add.text(300, 16, '', { fontSize: '32px', fill: '#000' });
+
+  this.timer = setInterval(() => {
+    this.timerSeconds--;
+
+    this.timerText.setText('Time: ' + this.timerSeconds);
+
+    if (this.timerSeconds <= 0) {
+      alert('Game Over!!');
+      //handleGameOver();
+      clearInterval(this.timer); // Stop the timer
+    }
+  }, 1000); // Update the timer every second (1000 milliseconds)
+
+
   // Define movement variables
   this.moveInput = 0;
   this.moveSpeed = 1600;
   this.acceleration = 1000;
-  this.deceleration = 500
+  this.deceleration = 500;
 
   //
   // Platforms
@@ -88,7 +101,7 @@ function create() {
   const platformGround1 = this.platformsGround.create(250, 948, 'stage_one_platform_ground');
   platformGround1.setScale(0.6); // Shrink the platform by a scale 
   // platformGround1.refreshBody(); // Refresh the body to apply changes
-  
+
   const platformGround2 = this.platformsGround.create(750, 948, 'stage_one_platform_ground');
   platformGround2.setScale(0.6); // Shrink the platform by a scale 
 
@@ -133,19 +146,8 @@ function create() {
   this.physics.add.collider(this.player, this.platformsGround, null, null, true);
   this.physics.add.collider(this.player, this.platformsRoof1, null, null, true);
   this.physics.add.collider(this.player, this.platformsRoof2, null, null, true);
-  
-  this.otherPlayers = this.physics.add.group();
 
-  // Players joining
-  this.socket.on('currentPlayers', function(players) {
-    Object.keys(players).forEach(function(id) {
-      if (players[id].playerId === self.socket.id) {
-        addPlayer(self, players[id]);
-      } else {
-        addOtherPlayers(self, players[id]);
-      }
-    });
-  });
+  this.otherPlayers = this.physics.add.group();
 
   this.socket.on('newPlayer', function(playerInfo) {
     addOtherPlayers(self, playerInfo);
@@ -159,7 +161,7 @@ function create() {
     });
   });
 
-  
+
 
   this.socket.on('playerMoved', function(playerInfo) {
     self.otherPlayers.getChildren().forEach(function(otherPlayer) {
@@ -187,172 +189,147 @@ function create() {
   //   }, null, self);
   // });
 
-
-  // Create a sprite for the bottom platform
-  const bottomPlatform = this.physics.add.sprite(game.config.width / 2, game.config.height, 'platform');
-
-  // Set origin to center bottom
-  bottomPlatform.setOrigin(0.5, 1);
-
-  // Enable physics for the platform
-  this.physics.world.enable(bottomPlatform);
-
-  // Make the platform immovable
-  bottomPlatform.body.setImmovable(true);
-
-  this.player = this.physics.add.sprite(350, 0, 'player').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
-  this.physics.add.collider(this.player, bottomPlatform);
-
-  // Player Physics
-  // Add physics properties to player
-  this.player.setCollideWorldBounds(true);
-
-  // Jump velocity
-  this.jumpVelocity = -600;
-
-
 }
+  function update() {
 
-function update() {
 
- 
-  if (this.player) {
-    // const { width, height } = this.sys.game.config;
-    // const halfWidth = this.player.width / 2;
-    // const halfHeight = this.player.height / 2;
+    if (this.player) {
+      // const { width, height } = this.sys.game.config;
+      // const halfWidth = this.player.width / 2;
+      // const halfHeight = this.player.height / 2;
 
-    //
-    // Player movement
-    //
+      //
+      // Player movement
+      //
 
-    // Run
-    //
-    let targetSpeed = this.moveInput * this.moveSpeed;
-    
-    // Check for left arrow key press
-    if (this.cursors.left.isDown) {
-      targetSpeed = -this.moveSpeed;
-      this.player.setFlipX(true); // Flip the sprite horizontally
+      // Run
+      //
+      let targetSpeed = this.moveInput * this.moveSpeed;
+
+      // Check for left arrow key press
+      if (this.cursors.left.isDown) {
+        targetSpeed = -this.moveSpeed;
+        this.player.setFlipX(true); // Flip the sprite horizontally
+      }
+      // Check for right arrow key press
+      else if (this.cursors.right.isDown) {
+        targetSpeed = this.moveSpeed;
+        this.player.setFlipX(false); // Reset the sprite's flip
+      }
+
+      // Apply acceleration and deceleration
+      if (targetSpeed !== 0) {
+        // Apply acceleration towards the target speed
+        this.player.setAccelerationX(targetSpeed > this.player.body.velocity.x ? this.acceleration : -this.acceleration);
+      } else {
+        // Apply deceleration to gradually stop
+        this.player.setAccelerationX(this.player.body.velocity.x > 0 ? -this.deceleration : this.deceleration);
+      }
+
+      // Limit maximum velocity
+      if (Math.abs(this.player.body.velocity.x) > this.moveSpeed) {
+        this.player.setVelocityX(this.moveSpeed * Math.sign(this.player.body.velocity.x));
+      }
+
+      // Check for jump key press
+      if (Phaser.Input.Keyboard.JustDown(this.cursors.space)) {
+        this.player.setVelocityY(this.jumpVelocity);
+      }
+
+      // Update player's velocity based on input
+      // let velocityX = 0;
+      // if (this.cursors.left.isDown /*|| this.cursors.a.isDown*/) {
+      //   velocityX = -150;
+      // } else if (this.cursors.right.isDown /*|| this.cursors.d.isDown*/) {
+      //   velocityX = 150;
+      // }
+      // this.player.setVelocityX(velocityX);
+
+      // if (this.cursors.up.isDown /*|| this.cursors.w.isDown*/) {
+      //   this.physics.velocityFromRotation(this.player.rotation + 1.5, 100, this.player.body.acceleration);
+      // } else {
+      //   this.player.setAcceleration(0);
+      // }
+
+
+      // // Update ships's velocity based on input
+      // if (this.cursors.left.isDown) {
+      //   this.player.setAngularVelocity(-150);
+      // } else if (this.cursors.right.isDown) {
+      //   this.player.setAngularVelocity(150);
+      // } else {
+      //   this.player.setAngularVelocity(0);
+      // }
+
+      // if (this.cursors.up.isDown) {
+      //   this.physics.velocityFromRotation(this.player.rotation + 1.5, 100, this.player.body.acceleration);
+      // } else {
+      //   this.player.setAcceleration(0);
+      // }
+
+
+
+      const width = this.physics.world.bounds.width;
+      const height = this.physics.world.bounds.height;
+      const buffer = 2; // Adjust this value as needed
+
+      if (this.player.x < -buffer) {
+        this.player.x = width + buffer;
+      } else if (this.player.x > width + buffer) {
+        this.player.x = -buffer;
+      }
+
+      if (this.player.y < -buffer) {
+        this.player.y = height + buffer;
+      } else if (this.player.y > height + buffer) {
+        this.player.y = -buffer;
+      }
+      // emit player movement
+      const x = this.player.x;
+      const y = this.player.y;
+      const r = this.player.rotation;
+      if (this.player.oldPosition && (x !== this.player.oldPosition.x || y !== this.player.oldPosition.y || r !== this.player.oldPosition.rotation)) {
+        this.socket.emit('playerMovement', { x: this.player.x, y: this.player.y, rotation: this.player.rotation });
+      }
+      // save old position data
+      this.player.oldPosition = {
+        x: this.player.x,
+        y: this.player.y,
+        rotation: this.player.rotation
+      };
     }
-    // Check for right arrow key press
-    else if (this.cursors.right.isDown) {
-      targetSpeed = this.moveSpeed;
-      this.player.setFlipX(false); // Reset the sprite's flip
-    }
+  }
+  // // Wrap vertically
+  // if (this.player.y < -halfHeight) {
+  //   this.player.y = height + halfHeight;
+  // } else if (this.player.y > height + halfHeight) {
+  //   this.player.y = -halfHeight;
+  // }
+  // }
+  // this.physics.world.wrap(this.player, 5);
+  //https://labs.phaser.io/view.html?src=src/physics/arcade/wrap%20sprite.js
+  // }
 
-    // Apply acceleration and deceleration
-    if (targetSpeed !== 0) {
-      // Apply acceleration towards the target speed
-      this.player.setAccelerationX(targetSpeed > this.player.body.velocity.x ? this.acceleration : -this.acceleration);
+  function addPlayer(self, playerInfo) {
+    self.player = self.physics.add.image(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setDisplaySize(53, 40);//53px by 40px
+    if (playerInfo.team === 'blue') {
+      self.player.setTint(0x0000ff);
     } else {
-      // Apply deceleration to gradually stop
-      this.player.setAccelerationX(this.player.body.velocity.x > 0 ? -this.deceleration : this.deceleration);
+      self.player.setTint(0xff0000);
     }
-
-    // Limit maximum velocity
-    if (Math.abs(this.player.body.velocity.x) > this.moveSpeed) {
-      this.player.setVelocityX(this.moveSpeed * Math.sign(this.player.body.velocity.x));
-    }
-      
-    // Check for jump key press
-    if (Phaser.Input.Keyboard.JustDown(this.cursors.space)) {
-      this.player.setVelocityY(this.jumpVelocity);
-    }
-
-    // Update player's velocity based on input
-    // let velocityX = 0;
-    // if (this.cursors.left.isDown /*|| this.cursors.a.isDown*/) {
-    //   velocityX = -150;
-    // } else if (this.cursors.right.isDown /*|| this.cursors.d.isDown*/) {
-    //   velocityX = 150;
-    // }
-    // this.player.setVelocityX(velocityX);
-
-    // if (this.cursors.up.isDown /*|| this.cursors.w.isDown*/) {
-    //   this.physics.velocityFromRotation(this.player.rotation + 1.5, 100, this.player.body.acceleration);
-    // } else {
-    //   this.player.setAcceleration(0);
-    // }
-    
-
-    // // Update ships's velocity based on input
-    // if (this.cursors.left.isDown) {
-    //   this.player.setAngularVelocity(-150);
-    // } else if (this.cursors.right.isDown) {
-    //   this.player.setAngularVelocity(150);
-    // } else {
-    //   this.player.setAngularVelocity(0);
-    // }
-
-    // if (this.cursors.up.isDown) {
-    //   this.physics.velocityFromRotation(this.player.rotation + 1.5, 100, this.player.body.acceleration);
-    // } else {
-    //   this.player.setAcceleration(0);
-    // }
-
-
-
-    const width = this.physics.world.bounds.width;
-    const height = this.physics.world.bounds.height;
-    const buffer = 2; // Adjust this value as needed
-
-    if (this.player.x < -buffer) {
-      this.player.x = width + buffer;
-    } else if (this.player.x > width + buffer) {
-      this.player.x = -buffer;
-    }
-
-    if (this.player.y < -buffer) {
-      this.player.y = height + buffer;
-    } else if (this.player.y > height + buffer) {
-      this.player.y = -buffer;
-    }
-    // emit player movement
-    const x = this.player.x;
-    const y = this.player.y;
-    const r = this.player.rotation;
-    if (this.player.oldPosition && (x !== this.player.oldPosition.x || y !== this.player.oldPosition.y || r !== this.player.oldPosition.rotation)) {
-      this.socket.emit('playerMovement', { x: this.player.x, y: this.player.y, rotation: this.player.rotation });
-    }
-    // save old position data
-    this.player.oldPosition = {
-      x: this.player.x,
-      y: this.player.y,
-      rotation: this.player.rotation
-    };
+    self.player.setDrag(100);
+    self.player.setAngularDrag(100);
+    self.player.setMaxVelocity(200);
   }
-}
-// // Wrap vertically
-// if (this.player.y < -halfHeight) {
-//   this.player.y = height + halfHeight;
-// } else if (this.player.y > height + halfHeight) {
-//   this.player.y = -halfHeight;
-// }
-// }
-// this.physics.world.wrap(this.player, 5);
-//https://labs.phaser.io/view.html?src=src/physics/arcade/wrap%20sprite.js
-// }
 
-function addPlayer(self, playerInfo) {
-  self.player = self.physics.add.image(playerInfo.x, playerInfo.y, 'player').setOrigin(0.5, 0.5).setDisplaySize(53, 40);//53px by 40px
-  if (playerInfo.team === 'blue') {
-    self.player.setTint(0x0000ff);
-  } else {
-    self.player.setTint(0xff0000);
+  function addOtherPlayers(self, playerInfo) {
+    const otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, 'otherPlayer').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
+    if (playerInfo.team === 'blue') {
+      otherPlayer.setTint(0x0000ff);
+    } else {
+      otherPlayer.setTint(0xff0000);
+    }
+    otherPlayer.playerId = playerInfo.playerId;
+    self.otherPlayers.add(otherPlayer);
   }
-  self.player.setDrag(100);
-  self.player.setAngularDrag(100);
-  self.player.setMaxVelocity(200);
-}
-
-function addOtherPlayers(self, playerInfo) {
-  const otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, 'otherPlayer').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
-  if (playerInfo.team === 'blue') {
-    otherPlayer.setTint(0x0000ff);
-  } else {
-    otherPlayer.setTint(0xff0000);
-  }
-  otherPlayer.playerId = playerInfo.playerId;
-  self.otherPlayers.add(otherPlayer);
-}
 

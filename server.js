@@ -41,6 +41,7 @@ io.on('connection', function(socket) {
   };
   // send the players object to the new player
   socket.emit('currentPlayers', players);
+  console.log('Players: ', players)
 
   // send the star object to the new player
 socket.emit('starLocation', star);
