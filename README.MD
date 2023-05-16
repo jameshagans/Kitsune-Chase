@@ -22,4 +22,4 @@ Use `SPACE` to `JUMP`
 
 # Wireframe 
 
-![https://github.com/jameshagans/Kitsune-Chase/blob/master/public/assets/kitsune-chase-wireframe.drawio.png?raw=true]
+!(https://github.com/jameshagans/Kitsune-Chase/blob/master/public/assets/kitsune-chase-wireframe.drawio.png?raw=true)
