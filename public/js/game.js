@@ -2,7 +2,7 @@ const config = {
   type: Phaser.AUTO,
   parent: 'phaser-example',
   width: 1600,
-  height: 1200,
+  height: 1150,
   physics: {
     default: 'arcade',
     arcade: {
@@ -24,8 +24,8 @@ function preload() {
   this.load.image('star', 'assets/star_gold.png');
   this.load.image('stage_one', 'assets/tiles/foxgate-city-day.png')
   this.load.image('stage_one_platform_ground', 'assets/tiles/foxgate-city-day-platform.PNG' )
-  this.load.image('stage_one_platform_roof-1', 'assets/tiles/foxgate-city-day-platform-roof-1.PNG' )
-  this.load.image('stage_one_platform_roof-2', 'assets/tiles/foxgate-city-day-platform-roof-2.PNG' )
+  this.load.image('stage_one_platform_roof-1-pink', 'assets/tiles/foxgate-city-day-platform-roof-1-pink.PNG' )
+  this.load.image('stage_one_platform_roof-2-orange', 'assets/tiles/foxgate-city-day-platform-roof-2-orange.PNG' )
 }
 
 function create() {
@@ -48,23 +48,38 @@ function create() {
   //
   // Platforms
   //
-  // Add event listener to the game canvas
-  this.input.on('pointermove', function(pointer) {
+
+  // TESTING Log mouse position on click 
+  this.input.on('pointerdown', function(pointer) {
     console.log('Mouse Position:', pointer.x, pointer.y);
   });
+
   // Create groups for different platform types
   this.platformsGround = this.physics.add.staticGroup();
   this.platformsRoof1 = this.physics.add.staticGroup();
   this.platformsRoof2 = this.physics.add.staticGroup();
 
   // Create individual platforms and add them to their respective groups
-  const platformGround = this.platformsGround.create(100, 100, 'stage_one_platform_ground');
+  // Note: (x,y coordinates drop asset from CENTER of asset)
+  const platformGround1 = this.platformsGround.create(250, 948, 'stage_one_platform_ground');
+  platformGround1.setScale(0.6); // Shrink the platform by a scale of 0.5
+  
+  const platformGround2 = this.platformsGround.create(750, 948, 'stage_one_platform_ground');
+  platformGround2.setScale(0.6); // Shrink the platform by a scale of 0.5
+
+  const platformGround3 = this.platformsGround.create(1150, 1048, 'stage_one_platform_ground');
+  platformGround3.setScale(0.6); // Shrink the platform by a scale of 0.5
+
+  const platformGround4 = this.platformsGround.create(1650, 1048, 'stage_one_platform_ground');
+  platformGround4.setScale(0.6); // Shrink the platform by a scale of 0.5
+
+
+  const platformRoof1 = this.platformsRoof1.create(1376, 565, 'stage_one_platform_roof-1-pink');
+  platformRoof1.setScale(0.6); // Shrink the platform by a scale of 0.5
   // Adjust the values of x and y to position the platform
 
-  const platformRoof1 = this.platformsRoof1.create(200, 200, 'stage_one_platform_roof-1');
-  // Adjust the values of x and y to position the platform
-
-  const platformRoof2 = this.platformsRoof2.create(300, 300, 'stage_one_platform_roof-2');
+  const platformRoof2 = this.platformsRoof2.create(356, 561, 'stage_one_platform_roof-2-orange');
+  platformRoof2.setScale(0.6); // Shrink the platform by a scale of 0.5
   // Adjust the values of x and y to position the platform
 
   // Enable collision between the player and different platform groups
