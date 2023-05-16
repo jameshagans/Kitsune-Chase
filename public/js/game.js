@@ -34,18 +34,44 @@ function create() {
   //const player = this.physics.add.sprite(350, 0, 'player'); 
   const self = this;
   this.socket = io();
+  this.otherPlayers = this.physics.add.group();
   this.cursors = this.input.keyboard.createCursorKeys();
 
      // Players joining
-    //  this.socket.on('currentPlayers', function(players) {
-    //   Object.keys(players).forEach(function(id) {
-    //     if (players[id].playerId === self.socket.id) {
-    //       addPlayer(self, players[id]);
-    //     } else {
-    //       addOtherPlayers(self, players[id]);
-    //     }
-    //   });
-    // });
+     this.socket.on('currentPlayers', function(players) {
+      Object.keys(players).forEach(function(id) {
+        if (players[id].playerId === self.socket.id) {
+          addPlayer(self, players[id]);
+        } else {
+          addOtherPlayers(self, players[id]);
+        }
+      });
+    });
+
+    this.socket.on('newPlayer', function(playerInfo) {
+      addOtherPlayers(self, playerInfo);
+    });
+    
+    this.socket.on('disconnected', function(playerId) {
+      self.otherPlayers.getChildren().forEach(function(otherPlayer) {
+        if (playerId === otherPlayer.playerId) {
+          otherPlayer.destroy();
+        }
+      });
+    });
+  
+  
+    this.socket.on('playerMoved', function(playerInfo) {
+      self.otherPlayers.getChildren().forEach(function(otherPlayer) {
+        if (playerInfo.playerId === otherPlayer.playerId) {
+          otherPlayer.setRotation(playerInfo.rotation);
+          otherPlayer.setPosition(playerInfo.x, playerInfo.y);
+        }
+      });
+    });
+  
+
+
 
   // Background image 
   const backgroundImage = this.add.image(0, 0, 'stage_one').setOrigin(0);
@@ -60,6 +86,7 @@ function create() {
   backgroundImage.setPosition(0, 0);
 
 
+  //Game Timer 
   this.timerSeconds = 120; // 2 minutes in seconds
   this.timerText = this.add.text(300, 16, '', { fontSize: '32px', fill: '#000' });
 
@@ -132,12 +159,11 @@ function create() {
   // Make the platform immovable
   bottomPlatform.body.setImmovable(true);
 
-  this.player = this.physics.add.sprite(350, 500, 'fox').setOrigin(0.5, 0.5).setDisplaySize(100, 80);;
+  //this.player = this.physics.add.sprite(350, 500, 'fox').setOrigin(0.5, 0.5).setDisplaySize(100, 80);;
   this.physics.add.collider(this.player, bottomPlatform);
 
   // Player Physics
   // Add physics properties to player
-  this.player.setCollideWorldBounds(true);
 
   // Jump velocity
   this.jumpVelocity = -600;
@@ -147,39 +173,14 @@ function create() {
   this.physics.add.collider(this.player, this.platformsRoof1, null, null, true);
   this.physics.add.collider(this.player, this.platformsRoof2, null, null, true);
 
-  this.otherPlayers = this.physics.add.group();
-
-  this.socket.on('newPlayer', function(playerInfo) {
-    addOtherPlayers(self, playerInfo);
-  });
-
-  this.socket.on('disconnected', function(playerId) {
-    self.otherPlayers.getChildren().forEach(function(otherPlayer) {
-      if (playerId === otherPlayer.playerId) {
-        otherPlayer.destroy();
-      }
-    });
-  });
-
-
-
-  this.socket.on('playerMoved', function(playerInfo) {
-    self.otherPlayers.getChildren().forEach(function(otherPlayer) {
-      if (playerInfo.playerId === otherPlayer.playerId) {
-        otherPlayer.setRotation(playerInfo.rotation);
-        otherPlayer.setPosition(playerInfo.x, playerInfo.y);
-      }
-    });
-  });
-
 
   this.blueScoreText = this.add.text(16, 16, '', { fontSize: '32px', fill: '#0000FF' });
   this.redScoreText = this.add.text(584, 16, '', { fontSize: '32px', fill: '#FF0000' });
 
-  this.socket.on('scoreUpdate', function(scores) {
-    self.blueScoreText.setText('Player 1: ' + scores.blue);
-    self.redScoreText.setText('Player 2: ' + scores.red);
-  });
+  // this.socket.on('scoreUpdate', function(scores) {
+  //   self.blueScoreText.setText('Player 1: ' + scores.blue);
+  //   self.redScoreText.setText('Player 2: ' + scores.red);
+  // });
 
   // this.socket.on('starLocation', function(starLocation) {
   //   if (self.star) self.star.destroy();
@@ -189,7 +190,37 @@ function create() {
   //   }, null, self);
   // });
 
+} function addPlayer(self, playerInfo) {
+  console.log('playerInfo: ', playerInfo)
+  self.player = self.physics.add.sprite(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
+  //self.player.setCollideWorldBounds(true);
+
+  //53px by 40px
+  // if (playerInfo.team === 'blue') {
+  //   self.player.setTint(0x0000ff);
+  // } else {
+  //   self.player.setTint(0xff0000);
+  // }
+  self.player.setDrag(100);
+  self.player.setAngularDrag(100);
+  self.player.setMaxVelocity(200);
 }
+
+function addOtherPlayers(self, playerInfo) {
+  console.log('OtherplayerInfo: ', playerInfo)
+  const otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setDisplaySize(100, 80);
+  //self.player.setCollideWorldBounds(true);
+
+  // if (playerInfo.team === 'blue') {
+  //   otherPlayer.setTint(0x0000ff);
+  // } else {
+  //   otherPlayer.setTint(0xff0000);
+  // }
+  otherPlayer.playerId = playerInfo.playerId;
+  self.otherPlayers.add(otherPlayer);
+}
+
+
   function update() {
 
 
@@ -310,26 +341,4 @@ function create() {
   //https://labs.phaser.io/view.html?src=src/physics/arcade/wrap%20sprite.js
   // }
 
-  function addPlayer(self, playerInfo) {
-    self.player = self.physics.add.image(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setDisplaySize(53, 40);//53px by 40px
-    if (playerInfo.team === 'blue') {
-      self.player.setTint(0x0000ff);
-    } else {
-      self.player.setTint(0xff0000);
-    }
-    self.player.setDrag(100);
-    self.player.setAngularDrag(100);
-    self.player.setMaxVelocity(200);
-  }
-
-  function addOtherPlayers(self, playerInfo) {
-    const otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, 'otherPlayer').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
-    if (playerInfo.team === 'blue') {
-      otherPlayer.setTint(0x0000ff);
-    } else {
-      otherPlayer.setTint(0xff0000);
-    }
-    otherPlayer.playerId = playerInfo.playerId;
-    self.otherPlayers.add(otherPlayer);
-  }
 
