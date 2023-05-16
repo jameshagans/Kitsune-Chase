@@ -30,6 +30,23 @@ function preload() {
 }
 
 function create() {
+
+  this.timerSeconds = 120; // 2 minutes in seconds
+  this.timerText = this.add.text(300, 16, '', { fontSize: '32px', fill: '#fff' });
+
+  this.timer = setInterval(() => {
+    this.timerSeconds--;
+
+    this.timerText.setText('Time: ' + this.timerSeconds);
+
+    if (this.timerSeconds <= 0) {
+      alert('Game Over!!')
+      //handleGameOver();
+      clearInterval(this.timer); // Stop the timer
+    }
+  }, 1000); // Update the timer every second (1000 milliseconds)
+
+  //const player = this.physics.add.sprite(350, 0, 'player'); 
   const self = this;
   this.socket = io();
   this.cursors = this.input.keyboard.createCursorKeys();
@@ -119,21 +136,22 @@ function create() {
   
   this.otherPlayers = this.physics.add.group();
 
-  // // Players joining
-  // this.socket.on('currentPlayers', function(players) {
-  //   Object.keys(players).forEach(function(id) {
-  //     if (players[id].playerId === self.socket.id) {
-  //       addPlayer(self, players[id]);
-  //     } else {
-  //       addOtherPlayers(self, players[id]);
-  //     }
-  //   });
-  // });
+  // Players joining
+  this.socket.on('currentPlayers', function(players) {
+    Object.keys(players).forEach(function(id) {
+      if (players[id].playerId === self.socket.id) {
+        addPlayer(self, players[id]);
+      } else {
+        addOtherPlayers(self, players[id]);
+      }
+    });
+  });
 
   this.socket.on('newPlayer', function(playerInfo) {
     addOtherPlayers(self, playerInfo);
   });
-  this.socket.on('disconnect', function(playerId) {
+
+  this.socket.on('disconnected', function(playerId) {
     self.otherPlayers.getChildren().forEach(function(otherPlayer) {
       if (playerId === otherPlayer.playerId) {
         otherPlayer.destroy();
@@ -157,25 +175,50 @@ function create() {
   this.redScoreText = this.add.text(584, 16, '', { fontSize: '32px', fill: '#FF0000' });
 
   this.socket.on('scoreUpdate', function(scores) {
-    self.blueScoreText.setText('Blue: ' + scores.blue);
-    self.redScoreText.setText('Red: ' + scores.red);
+    self.blueScoreText.setText('Player 1: ' + scores.blue);
+    self.redScoreText.setText('Player 2: ' + scores.red);
   });
 
-  this.socket.on('starLocation', function(starLocation) {
-    if (self.star) self.star.destroy();
-    self.star = self.physics.add.image(starLocation.x, starLocation.y, 'star');
-    self.physics.add.overlap(self.player, self.star, function() {
-      this.socket.emit('starCollected');
-    }, null, self);
-  });
+  // this.socket.on('starLocation', function(starLocation) {
+  //   if (self.star) self.star.destroy();
+  //   self.star = self.physics.add.image(starLocation.x, starLocation.y, 'star');
+  //   self.physics.add.overlap(self.player, self.star, function() {
+  //     this.socket.emit('starCollected');
+  //   }, null, self);
+  // });
 
-  
+
+  // Create a sprite for the bottom platform
+  const bottomPlatform = this.physics.add.sprite(game.config.width / 2, game.config.height, 'platform');
+
+  // Set origin to center bottom
+  bottomPlatform.setOrigin(0.5, 1);
+
+  // Enable physics for the platform
+  this.physics.world.enable(bottomPlatform);
+
+  // Make the platform immovable
+  bottomPlatform.body.setImmovable(true);
+
+  this.player = this.physics.add.sprite(350, 0, 'player').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
+  this.physics.add.collider(this.player, bottomPlatform);
+
+  // Player Physics
+  // Add physics properties to player
+  this.player.setCollideWorldBounds(true);
+
+  // Jump velocity
+  this.jumpVelocity = -600;
+
+
 }
 
 function update() {
+
+ 
   if (this.player) {
-    const { width, height } = this.sys.game.config;
-    const halfWidth = this.player.width / 2;
+    // const { width, height } = this.sys.game.config;
+    // const halfWidth = this.player.width / 2;
     // const halfHeight = this.player.height / 2;
 
     //
@@ -248,58 +291,68 @@ function update() {
     // }
 
 
-    // Wrap horizontally
-    if (this.player.x < -halfWidth) {
-      // emit player movement
-      const x = this.player.x;
-      const y = this.player.y;
-      const r = this.player.rotation;
-      if (this.player.oldPosition && (x !== this.player.oldPosition.x || y !== this.player.oldPosition.y || r !== this.player.oldPosition.rotation)) {
-        this.socket.emit('playerMovement', { x: this.player.x, y: this.player.y, rotation: this.player.rotation });
-      }
-      // save old position data
-      this.player.oldPosition = {
-        x: this.player.x,
-        y: this.player.y,
-        rotation: this.player.rotation
-      };
 
-      this.player.x = width + halfWidth;
-    } else if (this.player.x > width + halfWidth) {
-      this.player.x = -halfWidth;
+    const width = this.physics.world.bounds.width;
+    const height = this.physics.world.bounds.height;
+    const buffer = 2; // Adjust this value as needed
+
+    if (this.player.x < -buffer) {
+      this.player.x = width + buffer;
+    } else if (this.player.x > width + buffer) {
+      this.player.x = -buffer;
     }
 
-    // // Wrap vertically
-    // if (this.player.y < -halfHeight) {
-    //   this.player.y = height + halfHeight;
-    // } else if (this.player.y > height + halfHeight) {
-    //   this.player.y = -halfHeight;
-    // }
+    if (this.player.y < -buffer) {
+      this.player.y = height + buffer;
+    } else if (this.player.y > height + buffer) {
+      this.player.y = -buffer;
+    }
+    // emit player movement
+    const x = this.player.x;
+    const y = this.player.y;
+    const r = this.player.rotation;
+    if (this.player.oldPosition && (x !== this.player.oldPosition.x || y !== this.player.oldPosition.y || r !== this.player.oldPosition.rotation)) {
+      this.socket.emit('playerMovement', { x: this.player.x, y: this.player.y, rotation: this.player.rotation });
+    }
+    // save old position data
+    this.player.oldPosition = {
+      x: this.player.x,
+      y: this.player.y,
+      rotation: this.player.rotation
+    };
   }
-  // this.physics.world.wrap(this.player, 5);
-  //https://labs.phaser.io/view.html?src=src/physics/arcade/wrap%20sprite.js
+}
+// // Wrap vertically
+// if (this.player.y < -halfHeight) {
+//   this.player.y = height + halfHeight;
+// } else if (this.player.y > height + halfHeight) {
+//   this.player.y = -halfHeight;
+// }
+// }
+// this.physics.world.wrap(this.player, 5);
+//https://labs.phaser.io/view.html?src=src/physics/arcade/wrap%20sprite.js
+// }
+
+function addPlayer(self, playerInfo) {
+  self.player = self.physics.add.image(playerInfo.x, playerInfo.y, 'player').setOrigin(0.5, 0.5).setDisplaySize(53, 40);//53px by 40px
+  if (playerInfo.team === 'blue') {
+    self.player.setTint(0x0000ff);
+  } else {
+    self.player.setTint(0xff0000);
+  }
+  self.player.setDrag(100);
+  self.player.setAngularDrag(100);
+  self.player.setMaxVelocity(200);
 }
 
-// function addPlayer(self, playerInfo) {
-//   self.player = self.physics.add.image(playerInfo.x, playerInfo.y, 'player').setOrigin(0.5, 0.5).setDisplaySize(53, 40);//53px by 40px
-//   if (playerInfo.team === 'blue') {
-//     self.player.setTint(0x0000ff);
-//   } else {
-//     self.player.setTint(0xff0000);
-//   }
-//   self.player.setDrag(100);
-//   self.player.setAngularDrag(100);
-//   self.player.setMaxVelocity(200);
-// }
-
-// function addOtherPlayers(self, playerInfo) {
-//   const otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, 'otherPlayer').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
-//   if (playerInfo.team === 'blue') {
-//     otherPlayer.setTint(0x0000ff);
-//   } else {
-//     otherPlayer.setTint(0xff0000);
-//   }
-//   otherPlayer.playerId = playerInfo.playerId;
-//   self.otherPlayers.add(otherPlayer);
-// }
+function addOtherPlayers(self, playerInfo) {
+  const otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, 'otherPlayer').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
+  if (playerInfo.team === 'blue') {
+    otherPlayer.setTint(0x0000ff);
+  } else {
+    otherPlayer.setTint(0xff0000);
+  }
+  otherPlayer.playerId = playerInfo.playerId;
+  self.otherPlayers.add(otherPlayer);
+}
 

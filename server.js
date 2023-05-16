@@ -14,6 +14,8 @@ const scores = {
   red: 0
 };
 
+let connectedPlayers = 0; 
+
 app.use(express.static(__dirname + '/public'));
 app.get('/', function(req, res) {
   res.sendFile(__dirname + '/index.html');
@@ -21,6 +23,13 @@ app.get('/', function(req, res) {
 
 io.on('connection', function(socket) {
   console.log('a user connected');
+  connectedPlayers++; 
+
+  if (connectedPlayers > 2) {
+    console.log('player limit reached')
+    socket.disconnect(true);
+    return;
+  }
 
   // create a new player and add it to our players object
   players[socket.id] = {
@@ -45,6 +54,9 @@ socket.emit('scoreUpdate', scores);
 
   socket.on('disconnect', function() {
     console.log('user disconnected: ', socket.id);
+
+     // Decrement the number of connected players
+     connectedPlayers--;
     // remove this player from our players object
     delete players[socket.id];
     // emit a message to all players to remove this player
@@ -62,17 +74,17 @@ socket.on('playerMovement', function (movementData) {
 
 
 
-  socket.on('starCollected', function () {
-    if (players[socket.id].team === 'red') {
-      scores.red += 10;
-    } else {
-      scores.blue += 10;
-    }
-    star.x = Math.floor(Math.random() * 700) + 50;
-    star.y = Math.floor(Math.random() * 500) + 50;
-    io.emit('starLocation', star);
-    io.emit('scoreUpdate', scores);
-  });
+  // socket.on('starCollected', function () {
+  //   if (players[socket.id].team === 'red') {
+  //     scores.red += 10;
+  //   } else {
+  //     scores.blue += 10;
+  //   }
+  //   star.x = Math.floor(Math.random() * 700) + 50;
+  //   star.y = Math.floor(Math.random() * 500) + 50;
+  //   io.emit('starLocation', star);
+  //   io.emit('scoreUpdate', scores);
+  // });
 });
 
 });
