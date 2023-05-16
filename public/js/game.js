@@ -7,7 +7,7 @@ const config = {
     default: 'arcade',
     arcade: {
       debug: false,
-      gravity: { y: 100 }
+      gravity: { y: 500 }
     }
   },
   scene: {
@@ -19,7 +19,8 @@ const config = {
 
 const game = new Phaser.Game(config);
 function preload() {
-  this.load.image('player', 'assets/sprites/player_placeholder.png');
+  // this.load.image('player', 'assets/sprites/player_placeholder.png');
+  this.load.atlas('fox', '../assets/sprites/fox.png', '../assets/sprites/fox.json')
   this.load.image('otherPlayer', 'assets/enemyBlack5.png');
   this.load.image('star', 'assets/star_gold.png');
   this.load.image('stage_one', 'assets/tiles/foxgate-city-day.png')
@@ -31,6 +32,7 @@ function preload() {
 function create() {
   const self = this;
   this.socket = io();
+  this.cursors = this.input.keyboard.createCursorKeys();
 
   // Background image 
   const backgroundImage = this.add.image(0, 0, 'stage_one').setOrigin(0)
@@ -43,6 +45,12 @@ function create() {
 
   // Center the image on the screen
   backgroundImage.setPosition(0, 0);
+
+  // Define movement variables
+  this.moveInput = 0;
+  this.moveSpeed = 1600;
+  this.acceleration = 1000;
+  this.deceleration = 500
 
   //
   // Platforms
@@ -94,7 +102,7 @@ function create() {
   // Make the platform immovable
   bottomPlatform.body.setImmovable(true);
 
-  this.player = this.physics.add.sprite(350, 500, 'player').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
+  this.player = this.physics.add.sprite(350, 500, 'fox').setOrigin(0.5, 0.5).setDisplaySize(100, 80);;
   this.physics.add.collider(this.player, bottomPlatform);
 
   // Player Physics
@@ -132,7 +140,8 @@ function create() {
       }
     });
   });
-  this.cursors = this.input.keyboard.createCursorKeys();
+
+  
 
   this.socket.on('playerMoved', function(playerInfo) {
     self.otherPlayers.getChildren().forEach(function(otherPlayer) {
@@ -167,27 +176,61 @@ function update() {
   if (this.player) {
     const { width, height } = this.sys.game.config;
     const halfWidth = this.player.width / 2;
-    const halfHeight = this.player.height / 2;
+    // const halfHeight = this.player.height / 2;
 
-    // Update player's velocity based on input
-    let velocityX = 0;
-    if (this.cursors.left.isDown /*|| this.cursors.a.isDown*/) {
-      velocityX = -150;
-    } else if (this.cursors.right.isDown /*|| this.cursors.d.isDown*/) {
-      velocityX = 150;
-    }
-    this.player.setVelocityX(velocityX);
+    //
+    // Player movement
+    //
 
-    if (this.cursors.up.isDown /*|| this.cursors.w.isDown*/) {
-      this.physics.velocityFromRotation(this.player.rotation + 1.5, 100, this.player.body.acceleration);
-    } else {
-      this.player.setAcceleration(0);
-    }
+    // Run
+    //
+    let targetSpeed = this.moveInput * this.moveSpeed;
     
+    // Check for left arrow key press
+    if (this.cursors.left.isDown) {
+      targetSpeed = -this.moveSpeed;
+      this.player.setFlipX(true); // Flip the sprite horizontally
+    }
+    // Check for right arrow key press
+    else if (this.cursors.right.isDown) {
+      targetSpeed = this.moveSpeed;
+      this.player.setFlipX(false); // Reset the sprite's flip
+    }
+
+    // Apply acceleration and deceleration
+    if (targetSpeed !== 0) {
+      // Apply acceleration towards the target speed
+      this.player.setAccelerationX(targetSpeed > this.player.body.velocity.x ? this.acceleration : -this.acceleration);
+    } else {
+      // Apply deceleration to gradually stop
+      this.player.setAccelerationX(this.player.body.velocity.x > 0 ? -this.deceleration : this.deceleration);
+    }
+
+    // Limit maximum velocity
+    if (Math.abs(this.player.body.velocity.x) > this.moveSpeed) {
+      this.player.setVelocityX(this.moveSpeed * Math.sign(this.player.body.velocity.x));
+    }
+      
     // Check for jump key press
     if (Phaser.Input.Keyboard.JustDown(this.cursors.space)) {
       this.player.setVelocityY(this.jumpVelocity);
     }
+
+    // Update player's velocity based on input
+    // let velocityX = 0;
+    // if (this.cursors.left.isDown /*|| this.cursors.a.isDown*/) {
+    //   velocityX = -150;
+    // } else if (this.cursors.right.isDown /*|| this.cursors.d.isDown*/) {
+    //   velocityX = 150;
+    // }
+    // this.player.setVelocityX(velocityX);
+
+    // if (this.cursors.up.isDown /*|| this.cursors.w.isDown*/) {
+    //   this.physics.velocityFromRotation(this.player.rotation + 1.5, 100, this.player.body.acceleration);
+    // } else {
+    //   this.player.setAcceleration(0);
+    // }
+    
 
     // // Update ships's velocity based on input
     // if (this.cursors.left.isDown) {
