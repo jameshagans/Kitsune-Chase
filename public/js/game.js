@@ -29,7 +29,6 @@ function preload() {
 }
 
 function create() {
-  const player = this.physics.add.sprite(350, 0, 'player'); 
   const self = this;
   this.socket = io();
 
@@ -62,32 +61,54 @@ function create() {
   // Create individual platforms and add them to their respective groups
   // Note: (x,y coordinates drop asset from CENTER of asset)
   const platformGround1 = this.platformsGround.create(250, 948, 'stage_one_platform_ground');
-  platformGround1.setScale(0.6); // Shrink the platform by a scale of 0.5
+  platformGround1.setScale(0.6); // Shrink the platform by a scale 
+  // platformGround1.refreshBody(); // Refresh the body to apply changes
   
   const platformGround2 = this.platformsGround.create(750, 948, 'stage_one_platform_ground');
-  platformGround2.setScale(0.6); // Shrink the platform by a scale of 0.5
+  platformGround2.setScale(0.6); // Shrink the platform by a scale 
 
   const platformGround3 = this.platformsGround.create(1150, 1048, 'stage_one_platform_ground');
-  platformGround3.setScale(0.6); // Shrink the platform by a scale of 0.5
+  platformGround3.setScale(0.6); // Shrink the platform by a scale
 
   const platformGround4 = this.platformsGround.create(1650, 1048, 'stage_one_platform_ground');
-  platformGround4.setScale(0.6); // Shrink the platform by a scale of 0.5
+  platformGround4.setScale(0.6); // Shrink the platform by a scale 
 
 
   const platformRoof1 = this.platformsRoof1.create(1376, 565, 'stage_one_platform_roof-1-pink');
-  platformRoof1.setScale(0.6); // Shrink the platform by a scale of 0.5
+  platformRoof1.setScale(0.6); // Shrink the platform by a scale 
   // Adjust the values of x and y to position the platform
 
   const platformRoof2 = this.platformsRoof2.create(356, 561, 'stage_one_platform_roof-2-orange');
-  platformRoof2.setScale(0.6); // Shrink the platform by a scale of 0.5
+  platformRoof2.setScale(0.6); // Shrink the platform by a scale
   // Adjust the values of x and y to position the platform
 
+  // Create a sprite for the bottom platform
+  const bottomPlatform = this.physics.add.sprite(game.config.width / 2, game.config.height, 'platform');
+
+  // Set origin to center bottom
+  bottomPlatform.setOrigin(0, 0);
+
+  // Enable physics for the platform
+  this.physics.world.enable(bottomPlatform);
+
+  // Make the platform immovable
+  bottomPlatform.body.setImmovable(true);
+
+  this.player = this.physics.add.sprite(350, 500, 'player').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
+  this.physics.add.collider(this.player, bottomPlatform);
+
+  // Player Physics
+  // Add physics properties to player
+  this.player.setCollideWorldBounds(true);
+
+  // Jump velocity
+  this.jumpVelocity = -600;
+
   // Enable collision between the player and different platform groups
-  this.physics.add.collider(player, this.platformsGround);
-  this.physics.add.collider(player, this.platformsRoof1);
-  this.physics.add.collider(player, this.platformsRoof2);
-
-
+  this.physics.add.collider(this.player, this.platformsGround, null, null, true);
+  this.physics.add.collider(this.player, this.platformsRoof1, null, null, true);
+  this.physics.add.collider(this.player, this.platformsRoof2, null, null, true);
+  
   this.otherPlayers = this.physics.add.group();
 
   // // Players joining
@@ -139,29 +160,6 @@ function create() {
     }, null, self);
   });
 
-
-  // Create a sprite for the bottom platform
-  const bottomPlatform = this.physics.add.sprite(game.config.width / 2, game.config.height, 'platform');
-
-  // Set origin to center bottom
-  bottomPlatform.setOrigin(0.5, 1);
-
-  // Enable physics for the platform
-  this.physics.world.enable(bottomPlatform);
-
-  // Make the platform immovable
-  bottomPlatform.body.setImmovable(true);
-
-  this.player = this.physics.add.sprite(350, 0, 'player').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
-  this.physics.add.collider(this.player, bottomPlatform);
-
-  // Player Physics
-  // Add physics properties to player
-  this.player.setCollideWorldBounds(true);
-
-  // Jump velocity
-  this.jumpVelocity = -600;
-  
   
 }
 
