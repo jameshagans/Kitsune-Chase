@@ -22,6 +22,7 @@ app.get('/', function(req, res) {
 });
 
 io.on('connection', function(socket) {
+  console.log('testseteststst')
   console.log('a user connected');
   connectedPlayers++;
 

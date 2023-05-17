@@ -109,6 +109,15 @@ function create() {
   }, 1000); // Update the timer every second (1000 milliseconds)
 
 
+  this.blueScoreText = this.add.text(16, 16, '', { fontSize: '32px', fill: '#0000FF' });
+  this.redScoreText = this.add.text(584, 16, '', { fontSize: '32px', fill: '#FF0000' });
+
+  this.socket.on('scoreUpdate', function(scores) {
+    self.blueScoreText.setText('Player 1: ' + scores.blue);
+    self.redScoreText.setText('Player 2: ' + scores.red);
+  });
+
+
   // Define movement variables
   this.moveInput = 0;
   this.moveSpeed = 1600;
@@ -215,11 +224,17 @@ function update() {
     y: this.player.y,
     rotation: this.player.rotation
   };
+
     
- 
-  this.blueScoreText = this.add.text(16, 16, '', { fontSize: '32px', fill: '#0000FF' });
-  this.redScoreText = this.add.text(584, 16, '', { fontSize: '32px', fill: '#FF0000' });
 }
+  //KEEP IN CASE WE ADD COLLECTABLE ITEMS
+  // this.socket.on('starLocation', function(starLocation) {
+  //   if (self.star) self.star.destroy();
+  //   self.star = self.physics.add.image(starLocation.x, starLocation.y, 'star');
+  //   self.physics.add.overlap(self.player, self.star, function() {
+  //     this.socket.emit('starCollected');
+  //   }, null, self);
+  // });
 
 function addPlayer(self, playerInfo) {
   console.log('playerInfo: ', playerInfo)
@@ -232,3 +247,6 @@ function addOtherPlayers(self, playerInfo) {
   otherPlayer.playerId = playerInfo.playerId;
   self.otherPlayers.add(otherPlayer);
 }
+
+
+

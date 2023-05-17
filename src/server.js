@@ -21,7 +21,6 @@ app.get('/', function(req, res) {
 
 io.on('connection', function(socket) {
   console.log('a user connected');
-
   // create a new player and add it to our players object
   players[socket.id] = {
     rotation: 0,
