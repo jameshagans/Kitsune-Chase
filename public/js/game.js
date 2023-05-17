@@ -25,6 +25,8 @@ const config = {
 
 const game = new Phaser.Game(config);
 let canJump = true;
+let justJumped = false;
+let inAir = false;
 let doubleJump = false;
 
 function preload() {
@@ -201,26 +203,28 @@ function update() {
 
   spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
-
-  if (this.player.body.velocity.y !== 0) this.canJump = false;
-
   if (spaceBar.isDown) {
     if (canJump) {
       this.player.setVelocityY(-30); // Adjust the desired jump velocity
       canJump = false;
-      doubleJump = true;
+      justJumped = true;
     }
 
     if (doubleJump) {
-      {
-        this.player.setVelocityY(-30); // Adjust the desired jump velocity
-        doubleJump = false;
-      }
+      this.player.setVelocityY(-30); // Adjust the desired jump velocity
+      doubleJump = false;
+      justJumped = false;
     }
+  }
+
+  if (!spaceBar.isDown && justJumped) {
+    doubleJump = true;
   }
 
   this.matter.world.on('collisionstart', function (event, bodyA, bodyB) {
     canJump = true;
+    justJumped = false;
+    doubleJump = false;
   });
 
   // emit player movement
