@@ -24,7 +24,8 @@ const config = {
 };
 
 const game = new Phaser.Game(config);
-
+let canJump = true;
+let doubleJump = false;
 
 function preload() {
   // this.load.image('player', 'assets/sprites/player_placeholder.png');
@@ -44,7 +45,6 @@ function create() {
   this.socket = io();
   this.otherPlayers = this.add.group();
   this.cursors = this.input.keyboard.createCursorKeys();
-
      // Players joining
      this.socket.on('currentPlayers', function(players) {
       Object.keys(players).forEach(function(id) {
@@ -117,7 +117,6 @@ function create() {
     self.redScoreText.setText('Player 2: ' + scores.red);
   });
 
-
   // Define movement variables
   this.moveInput = 0;
   this.moveSpeed = 1600;
@@ -130,10 +129,12 @@ function create() {
   });
 
   this.player = this.matter.add.image(200, 200, 'fox').setScale(4);
+  this.canJump = true;
 
   const platformGround1 = this.matter.add.image(300, 948, 'stage_one_platform_ground');
   platformGround1.setStatic(true);
   platformGround1.setScale(0.6); // Shrink the platform by a scale 
+
   const platformGround2 = this.matter.add.image(768, 948, 'stage_one_platform_ground');
   platformGround2.setStatic(true);
 
@@ -177,16 +178,10 @@ function update() {
 
   this.player.body.isSensor = false; // Enable collisions
   this.player.body.restitution = 0; // Set restitution to 0 to prevent bouncing off surfaces
-  this.player.body.airFriction = 0.1;
-  this.player.body.friction = 0.1;
-  const maxSpeed = 15;
+  this.player.body.airFriction = 0.2;
+  this.player.body.friction = 0.15;
+  const maxSpeed = 12;
   let acceleration = 1.5;
-  let currentSpeed = 0;
-
-  // let interval = setInterval(() => {
-  //   currentSpeed - accelerationSpeed;
-  //   currentSpeed < -maxSpeed ? this.player.setVelocityX(-maxSpeed) : this.player.setVelocityX(currentSpeed)
-  // } , 66)
 
   if (this.cursors.left.isDown) {
     this.player.setVelocityX(this.player.body.velocity.x - acceleration);
@@ -206,10 +201,27 @@ function update() {
 
   spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
+
+  if (this.player.body.velocity.y !== 0) this.canJump = false;
+
   if (spaceBar.isDown) {
-    this.player.setVelocityY(-20); // Adjust the desired jump velocity
-    this.canJump = false; // Prevent multiple jumps until the player touches the ground again
+    if (canJump) {
+      this.player.setVelocityY(-30); // Adjust the desired jump velocity
+      canJump = false;
+      doubleJump = true;
+    }
+
+    if (doubleJump) {
+      {
+        this.player.setVelocityY(-30); // Adjust the desired jump velocity
+        doubleJump = false;
+      }
+    }
   }
+
+  this.matter.world.on('collisionstart', function (event, bodyA, bodyB) {
+    canJump = true;
+  });
 
   // emit player movement
   const x = this.player.x;
