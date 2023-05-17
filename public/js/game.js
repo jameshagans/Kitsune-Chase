@@ -149,6 +149,11 @@ function create() {
   platformRoof2.setScale(0.6); // Shrink the platform by a scale
   // Adjust the values of x and y to position the platform
 
+  const platformRoof3 = this.matter.add.image(906, 261, 'stage_one_platform_roof-2-orange');
+  platformRoof3.setStatic(true);
+  platformRoof3.setScale(0.6); // Shrink the platform by a scale
+  // Adjust the values of x and y to position the platform
+
   // Create a sprite for the bottom platform
   const bottomPlatform = this.matter.add.sprite(game.config.width / 2, game.config.height, 'platform');
 
@@ -164,24 +169,38 @@ function update() {
   this.player.body.isSensor = false; // Enable collisions
   this.player.body.restitution = 0; // Set restitution to 0 to prevent bouncing off surfaces
   this.player.body.airFriction = 0.1;
-  this.player.body.friction = 0.2;
-    
-    if (this.cursors.left.isDown) {
-      this.player.setVelocityX(-10)
-      // this.player.setFlipX(true); // Flip the sprite horizontally
-    }
-    // Check for right arrow key press
-    else if (this.cursors.right.isDown) {
-      this.player.setVelocityX(10)
-      // this.player.setFlipX(false); // Reset the sprite's flip
-    }
+  this.player.body.friction = 0.1;
+  const maxSpeed = 15;
+  let acceleration = 1.5;
+  let currentSpeed = 0;
 
-    spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+  // let interval = setInterval(() => {
+  //   currentSpeed - accelerationSpeed;
+  //   currentSpeed < -maxSpeed ? this.player.setVelocityX(-maxSpeed) : this.player.setVelocityX(currentSpeed)
+  // } , 66)
 
-    if (spaceBar.isDown) {
-      this.player.setVelocityY(-20); // Adjust the desired jump velocity
-      this.canJump = false; // Prevent multiple jumps until the player touches the ground again
-    }
+  if (this.cursors.left.isDown) {
+    this.player.setVelocityX(this.player.body.velocity.x - acceleration);
+    this.player.setFlipX(true); // Flip the sprite horizontally
+  }
+  // Check for right arrow key press
+  else if (this.cursors.right.isDown) {
+    this.player.setVelocityX(this.player.body.velocity.x + acceleration);
+    this.player.setFlipX(false); // Reset the sprite's flip
+  }
+
+  if (this.player.body.velocity.x > maxSpeed) {
+    this.player.setVelocityX(maxSpeed);
+  } else if (this.player.body.velocity.x < -maxSpeed) {
+    this.player.setVelocityX(-maxSpeed);
+  }
+
+  spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+  if (spaceBar.isDown) {
+    this.player.setVelocityY(-20); // Adjust the desired jump velocity
+    this.canJump = false; // Prevent multiple jumps until the player touches the ground again
+  }
 
   // emit player movement
   const x = this.player.x;
