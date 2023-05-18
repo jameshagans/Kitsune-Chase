@@ -24,7 +24,10 @@ const config = {
 };
 
 const game = new Phaser.Game(config);
-
+let canJump = true;
+let justJumped = false;
+let inAir = false;
+let doubleJump = false;
 
 function preload() {
   // this.load.image('player', 'assets/sprites/player_placeholder.png');
@@ -47,7 +50,6 @@ function create() {
   this.socket = io();
   this.otherPlayers = this.add.group();
   this.cursors = this.input.keyboard.createCursorKeys();
-
      // Players joining
      this.socket.on('currentPlayers', function(players) {
       Object.keys(players).forEach(function(id) {
@@ -120,7 +122,6 @@ function create() {
     self.redScoreText.setText('Player 2: ' + scores.red);
   });
 
-
   // Define movement variables
   this.moveInput = 0;
   this.moveSpeed = 1600;
@@ -132,11 +133,13 @@ function create() {
     console.log('Mouse Position:', pointer.x, pointer.y);
   });
 
-  //this.player = this.matter.add.image(200, 200, 'fox').setScale(4);
+  this.player = this.matter.add.image(200, 200, 'fox').setScale(4);
+  this.canJump = true;
 
   const platformGround1 = this.matter.add.image(300, 948, 'stage_one_platform_ground');
   platformGround1.setStatic(true);
   platformGround1.setScale(0.6); // Shrink the platform by a scale 
+
   const platformGround2 = this.matter.add.image(768, 948, 'stage_one_platform_ground');
   platformGround2.setStatic(true);
 
@@ -159,6 +162,11 @@ function create() {
   const platformRoof2 = this.matter.add.image(356, 561, 'stage_one_platform_roof-2-orange');
   platformRoof2.setStatic(true);
   platformRoof2.setScale(0.6); // Shrink the platform by a scale
+  // Adjust the values of x and y to position the platform
+
+  const platformRoof3 = this.matter.add.image(906, 261, 'stage_one_platform_roof-2-orange');
+  platformRoof3.setStatic(true);
+  platformRoof3.setScale(0.6); // Shrink the platform by a scale
   // Adjust the values of x and y to position the platform
 
   // Create a sprite for the bottom platform
@@ -206,25 +214,52 @@ function update() {
 
   this.player.body.isSensor = false; // Enable collisions
   this.player.body.restitution = 0; // Set restitution to 0 to prevent bouncing off surfaces
-  this.player.body.airFriction = 0.1;
-  this.player.body.friction = 0.2;
-    
-    if (this.cursors.left.isDown) {
-      this.player.setVelocityX(-10)
-      // this.player.setFlipX(true); // Flip the sprite horizontally
-    }
-    // Check for right arrow key press
-    else if (this.cursors.right.isDown) {
-      this.player.setVelocityX(10)
-      // this.player.setFlipX(false); // Reset the sprite's flip
+  this.player.body.airFriction = 0.2;
+  this.player.body.friction = 0.15;
+  const maxSpeed = 12;
+  let acceleration = 1.5;
+
+  if (this.cursors.left.isDown) {
+    this.player.setVelocityX(this.player.body.velocity.x - acceleration);
+    this.player.setFlipX(true); // Flip the sprite horizontally
+  }
+  // Check for right arrow key press
+  else if (this.cursors.right.isDown) {
+    this.player.setVelocityX(this.player.body.velocity.x + acceleration);
+    this.player.setFlipX(false); // Reset the sprite's flip
+  }
+
+  if (this.player.body.velocity.x > maxSpeed) {
+    this.player.setVelocityX(maxSpeed);
+  } else if (this.player.body.velocity.x < -maxSpeed) {
+    this.player.setVelocityX(-maxSpeed);
+  }
+
+  spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+  if (spaceBar.isDown) {
+    if (canJump) {
+      this.player.setVelocityY(-30); // Adjust the desired jump velocity
+      canJump = false;
+      justJumped = true;
     }
 
-    spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-
-    if (spaceBar.isDown) {
-      this.player.setVelocityY(-20); // Adjust the desired jump velocity
-      this.canJump = false; // Prevent multiple jumps until the player touches the ground again
+    if (doubleJump) {
+      this.player.setVelocityY(-30); // Adjust the desired jump velocity
+      doubleJump = false;
+      justJumped = false;
     }
+  }
+
+  if (!spaceBar.isDown && justJumped) {
+    doubleJump = true;
+  }
+
+  this.matter.world.on('collisionstart', function (event, bodyA, bodyB) {
+    canJump = true;
+    justJumped = false;
+    doubleJump = false;
+  });
 
   // emit player movement
   const x = this.player.x;
@@ -253,12 +288,12 @@ function update() {
 
 function addPlayer(self, playerInfo) {
   console.log('playerInfo: ', playerInfo)
-  self.player = self.matter.add.sprite(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
+  self.player = self.matter.add.image(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
 }
 
 function addOtherPlayers(self, playerInfo) {
   console.log('OtherplayerInfo: ', playerInfo)
-  const otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setDisplaySize(100, 80);
+  const otherPlayer = self.add.image(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setDisplaySize(100, 80);
   otherPlayer.playerId = playerInfo.playerId;
   self.otherPlayers.add(otherPlayer);
 }
