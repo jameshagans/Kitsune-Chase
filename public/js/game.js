@@ -23,6 +23,9 @@ const config = {
   }
 };
 
+const { Pairs } = Matter; 
+
+
 const game = new Phaser.Game(config);
 let canJump = true;
 let justJumped = false;
@@ -34,6 +37,7 @@ function preload() {
   this.load.atlas('fox', '../assets/sprites/fox.png', '../assets/sprites/fox.json');
   this.load.image('otherPlayer', 'assets/enemyBlack5.png');
   this.load.image('star', 'assets/star_gold.png');
+  this.load.image('other', 'assets/enemyBlack5.png');
   this.load.image('stage_one', 'assets/tiles/foxgate-city-day.png');
   this.load.image('stage_one_platform_ground', 'assets/tiles/foxgate-city-day-platform.PNG');
   this.load.image('stage_one_platform_roof-1-pink', 'assets/tiles/foxgate-city-day-platform-roof-1-pink.PNG');
@@ -51,9 +55,9 @@ function create() {
      this.socket.on('currentPlayers', function(players) {
       Object.keys(players).forEach(function(id) {
         if (players[id].playerId === self.socket.id) {
-          addPlayer(self, players[id]);
+             addPlayer(self, players[id]);
         } else {
-          addOtherPlayers(self, players[id]);
+           addOtherPlayers(self, players[id]);
         }
       });
     });
@@ -127,10 +131,10 @@ function create() {
 
   // TESTING Log mouse position on click 
   this.input.on('pointerdown', function(pointer) {
-    console.log('Mouse Position:', pointer.x, pointer.y);
+   // console.log('Mouse Position:', pointer.x, pointer.y);
   });
 
-  this.player = this.matter.add.image(200, 200, 'fox').setScale(4);
+  //this.player = this.matter.add.sprite(2000, 2000, 'star').setScale(4);
   this.canJump = true;
 
   const platformGround1 = this.matter.add.image(300, 948, 'stage_one_platform_ground');
@@ -173,81 +177,112 @@ function create() {
   bottomPlatform.setOrigin(0, 0);
   bottomPlatform.setStatic(true);
 
-
-   // Define collision bodies for players
-   this.player.setCircle(20); // Set the collision circle radius for the player
-   this.player.setCollisionCategory(1); // Assign collision category for the player
-     
-
-}
-
-
-function update() {
-  this.player.setOnCollide
-
-  this.player.body.isSensor = false; // Enable collisions
-  this.player.body.restitution = 0; // Set restitution to 0 to prevent bouncing off surfaces
-  this.player.body.airFriction = 0.2;
-  this.player.body.friction = 0.15;
-  const maxSpeed = 12;
-  let acceleration = 1.5;
-
-  if (this.cursors.left.isDown) {
-    this.player.setVelocityX(this.player.body.velocity.x - acceleration);
-    this.player.setFlipX(true); // Flip the sprite horizontally
-  }
-  // Check for right arrow key press
-  else if (this.cursors.right.isDown) {
-    this.player.setVelocityX(this.player.body.velocity.x + acceleration);
-    this.player.setFlipX(false); // Reset the sprite's flip
-  }
-
-  if (this.player.body.velocity.x > maxSpeed) {
-    this.player.setVelocityX(maxSpeed);
-  } else if (this.player.body.velocity.x < -maxSpeed) {
-    this.player.setVelocityX(-maxSpeed);
-  }
-
-  spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-
-  if (spaceBar.isDown) {
-    if (canJump) {
-      this.player.setVelocityY(-30); // Adjust the desired jump velocity
-      canJump = false;
-      justJumped = true;
-    }
-
-    if (doubleJump) {
-      this.player.setVelocityY(-30); // Adjust the desired jump velocity
-      doubleJump = false;
-      justJumped = false;
-    }
-  }
-
-  if (!spaceBar.isDown && justJumped) {
-    doubleJump = true;
-  }
-
   this.matter.world.on('collisionstart', function (event, bodyA, bodyB) {
     canJump = true;
     justJumped = false;
     doubleJump = false;
+
+
+    event.pairs.forEach(function (pair) {
+      const { bodyA, bodyB } = pair;
+      console.log('bodyA: ',bodyA)
+      console.log('bodyb: ',bodyB)
+    
+      // Check if collision involves the player and other players
+      if (
+        (bodyA.gameObject === this.player && bodyB.gameObject === this.otherPlayers) ||
+        (bodyA.gameObject === this.otherPlayers && bodyB.gameObject === this.player)
+      ) {
+        // Handle the collision logic here
+        handleCollision();
+      }
+    });
+
+
   });
 
-  // emit player movement
-  const x = this.player.x;
-  const y = this.player.y;
-  const r = this.player.rotation;
-  if (this.player.oldPosition && (x !== this.player.oldPosition.x || y !== this.player.oldPosition.y || r !== this.player.oldPosition.rotation)) {
-    this.socket.emit('playerMovement', { x: this.player.x, y: this.player.y, rotation: this.player.rotation });
-  }
-  // save old position data
-  this.player.oldPosition = {
-    x: this.player.x,
-    y: this.player.y,
-    rotation: this.player.rotation
-  };
+  setTimeout(() => {
+    console.log('Player: ', this.player)
+    
+  }, 2000)
+  setTimeout(() => {
+    console.log('otherguy: ', this.otherPlayers.children)
+    
+  }, 5000)
 
+
+  
+}
+
+
+
+
+function update() {
+
+  setTimeout(() => {
+  
+  
+    this.player.setOnCollide
+  
+    this.player.body.isSensor = false; // Enable collisions
+    this.player.body.restitution = 0; // Set restitution to 0 to prevent bouncing off surfaces
+    this.player.body.airFriction = 0.2;
+    this.player.body.friction = 0.15;
+    const maxSpeed = 12;
+    let acceleration = 1.5;
+  
+    if (this.cursors.left.isDown) {
+      this.player.setVelocityX(this.player.body.velocity.x - acceleration);
+      this.player.setFlipX(true); // Flip the sprite horizontally
+    }
+    // Check for right arrow key press
+    else if (this.cursors.right.isDown) {
+      this.player.setVelocityX(this.player.body.velocity.x + acceleration);
+      this.player.setFlipX(false); // Reset the sprite's flip
+    }
+  
+    if (this.player.body.velocity.x > maxSpeed) {
+      this.player.setVelocityX(maxSpeed);
+    } else if (this.player.body.velocity.x < -maxSpeed) {
+      this.player.setVelocityX(-maxSpeed);
+    }
+  
+    spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+  
+    if (spaceBar.isDown) {
+      if (canJump) {
+        this.player.setVelocityY(-30); // Adjust the desired jump velocity
+        canJump = false;
+        justJumped = true;
+      }
+  
+      if (doubleJump) {
+        this.player.setVelocityY(-30); // Adjust the desired jump velocity
+        doubleJump = false;
+        justJumped = false;
+      }
+    }
+  
+    if (!spaceBar.isDown && justJumped) {
+      doubleJump = true;
+    }
+  
+    // emit player movement
+    const x = this.player.x;
+    const y = this.player.y;
+    const r = this.player.rotation;
+    if (this.player.oldPosition && (x !== this.player.oldPosition.x || y !== this.player.oldPosition.y || r !== this.player.oldPosition.rotation)) {
+      this.socket.emit('playerMovement', { x: this.player.x, y: this.player.y, rotation: this.player.rotation });
+    }
+    // save old position data
+    this.player.oldPosition = {
+      x: this.player.x,
+      y: this.player.y,
+      rotation: this.player.rotation
+    };
+  
+   }, 2000)
+ 
 }
   //KEEP IN CASE WE ADD COLLECTABLE ITEMS
   // this.socket.on('starLocation', function(starLocation) {
@@ -260,14 +295,14 @@ function update() {
 
 function addPlayer(self, playerInfo) {
   self.player = self.matter.add.sprite(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
-  console.log("SELF PLAYER", self.player.body)
+  // console.log("SELF PLAYER", self.player)
 }
 
 function addOtherPlayers(self, playerInfo) {
   const otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setDisplaySize(100, 80);
   otherPlayer.playerId = playerInfo.playerId;
   self.otherPlayers.add(otherPlayer);
-  console.log('OTERPLAYER: ', otherPlayer)
+  // console.log('OTERPLAYER: ', otherPlayer)
 }
 
 
