@@ -37,6 +37,9 @@ function preload() {
   this.load.image('stage_one_platform_roof-2-orange', 'assets/tiles/foxgate-city-day-platform-roof-2-orange.PNG');
 }
 
+let player;
+let otherPlayers;
+
 
 function create() {
   //const player = this.physics.add.sprite(350, 0, 'player'); 
@@ -129,7 +132,7 @@ function create() {
     console.log('Mouse Position:', pointer.x, pointer.y);
   });
 
-  this.player = this.matter.add.image(200, 200, 'fox').setScale(4);
+  //this.player = this.matter.add.image(200, 200, 'fox').setScale(4);
 
   const platformGround1 = this.matter.add.image(300, 948, 'stage_one_platform_ground');
   platformGround1.setStatic(true);
@@ -164,6 +167,37 @@ function create() {
   // Set origin to center bottom
   bottomPlatform.setOrigin(0, 0);
   bottomPlatform.setStatic(true);
+
+
+   // Define collision bodies for players
+   this.player = this.matter.add.image(200, 200, 'fox').setScale(4);
+   this.player.setCircle(20); // Set the collision circle radius for the player
+   this.player.setCollisionCategory(1); // Assign collision category for the player
+   
+   // Create a group for other players
+   this.otherPlayers = this.add.group();
+   
+   // Set collision events for players
+
+  this.matter.world.on('collisionstart', (event) => {
+    event.pairs.forEach((pair) => {
+      console.log('pairs: ',pair)
+      const bodyA = pair.bodyA;
+      const bodyB = pair.bodyB;
+      const gameObjectA = bodyA.gameObject;
+      const gameObjectB = bodyB.gameObject;
+  
+      // Check if the bodies colliding are the player and otherPlayer
+      if ((gameObjectA === this.player || gameObjectB === this.player)) {
+        // Collision between player and otherPlayer occurred
+        // Handle the collision here
+        // alert('HELLO')
+        // handleCollision();
+      }
+    });
+  });
+  
+
 }
 
 
@@ -229,5 +263,10 @@ function addOtherPlayers(self, playerInfo) {
   self.otherPlayers.add(otherPlayer);
 }
 
+
+function handleCollision() {
+  // Do something when player and otherPlayer collide
+  alert("Collision detected between player and otherPlayer!");
+}
 
 
