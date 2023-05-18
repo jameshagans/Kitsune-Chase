@@ -17,12 +17,11 @@ const scores = {
 let connectedPlayers = 0;
 
 app.use(express.static(__dirname + '/public'));
-app.get('/', function(req, res) {
+app.use('*', function(req, res) {
   res.sendFile(__dirname + '/index.html');
 });
 
 io.on('connection', function(socket) {
-  console.log('testseteststst')
   console.log('a user connected');
   connectedPlayers++;
 

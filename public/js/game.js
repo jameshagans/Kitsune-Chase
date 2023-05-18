@@ -40,9 +40,6 @@ function preload() {
   this.load.image('stage_one_platform_roof-2-orange', 'assets/tiles/foxgate-city-day-platform-roof-2-orange.PNG');
 }
 
-let player;
-let otherPlayers;
-
 
 function create() {
   //const player = this.physics.add.sprite(350, 0, 'player'); 
@@ -178,33 +175,9 @@ function create() {
 
 
    // Define collision bodies for players
-   this.player = this.matter.add.image(200, 200, 'fox').setScale(4);
    this.player.setCircle(20); // Set the collision circle radius for the player
    this.player.setCollisionCategory(1); // Assign collision category for the player
-   
-   // Create a group for other players
-   this.otherPlayers = this.add.group();
-   
-   // Set collision events for players
-
-  this.matter.world.on('collisionstart', (event) => {
-    event.pairs.forEach((pair) => {
-      console.log('pairs: ',pair)
-      const bodyA = pair.bodyA;
-      const bodyB = pair.bodyB;
-      const gameObjectA = bodyA.gameObject;
-      const gameObjectB = bodyB.gameObject;
-  
-      // Check if the bodies colliding are the player and otherPlayer
-      if ((gameObjectA === this.player || gameObjectB === this.player)) {
-        // Collision between player and otherPlayer occurred
-        // Handle the collision here
-        // alert('HELLO')
-        // handleCollision();
-      }
-    });
-  });
-  
+     
 
 }
 
@@ -275,7 +248,6 @@ function update() {
     rotation: this.player.rotation
   };
 
-    
 }
   //KEEP IN CASE WE ADD COLLECTABLE ITEMS
   // this.socket.on('starLocation', function(starLocation) {
@@ -287,15 +259,15 @@ function update() {
   // });
 
 function addPlayer(self, playerInfo) {
-  console.log('playerInfo: ', playerInfo)
-  self.player = self.matter.add.image(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
+  self.player = self.matter.add.sprite(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
+  console.log("SELF PLAYER", self.player.body)
 }
 
 function addOtherPlayers(self, playerInfo) {
-  console.log('OtherplayerInfo: ', playerInfo)
-  const otherPlayer = self.add.image(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setDisplaySize(100, 80);
+  const otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setDisplaySize(100, 80);
   otherPlayer.playerId = playerInfo.playerId;
   self.otherPlayers.add(otherPlayer);
+  console.log('OTERPLAYER: ', otherPlayer)
 }
 
 
