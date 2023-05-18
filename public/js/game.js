@@ -32,8 +32,6 @@ let doubleJump = false;
 function preload() {
   // this.load.image('player', 'assets/sprites/player_placeholder.png');
   this.load.atlas('fox', '../assets/sprites/fox.png', '../assets/sprites/fox.json');
-  this.load.image('otherPlayer', 'assets/enemyBlack5.png');
-  this.load.image('star', 'assets/star_gold.png');
   this.load.image('stage_one', 'assets/tiles/foxgate-city-day.png');
   this.load.image('stage_one_platform_ground', 'assets/tiles/foxgate-city-day-platform.PNG');
   this.load.image('stage_one_platform_roof-1-pink', 'assets/tiles/foxgate-city-day-platform-roof-1-pink.PNG');
@@ -93,6 +91,15 @@ function create() {
   // Center the image on the screen
   backgroundImage.setPosition(0, 0);
 
+  // Animations
+  this.anims.create({
+    key: "idle",
+    frames: this.anims.generateFrameNumbers("fox", {
+      start: 1,
+      end: 3
+    }),
+    repeat: -1
+  })
 
   //Game Timer 
   this.timerSeconds = 120; // 2 minutes in seconds
@@ -176,8 +183,6 @@ function create() {
 
 
 function update() {
-  this.player.setOnCollide
-
   this.player.body.isSensor = false; // Enable collisions
   this.player.body.restitution = 0; // Set restitution to 0 to prevent bouncing off surfaces
   this.player.body.airFriction = 0.2;
@@ -254,12 +259,14 @@ function update() {
 
 function addPlayer(self, playerInfo) {
   console.log('playerInfo: ', playerInfo)
-  self.player = self.matter.add.image(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
+  self.player = self.matter.add.sprite(playerInfo.x, playerInfo.y, 'fox').
+  setOrigin(0.5, 0.5)
+  self.player.setScale(4);
 }
 
 function addOtherPlayers(self, playerInfo) {
   console.log('OtherplayerInfo: ', playerInfo)
-  const otherPlayer = self.add.image(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setDisplaySize(100, 80);
+  const otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setDisplaySize(100, 80);
   otherPlayer.playerId = playerInfo.playerId;
   self.otherPlayers.add(otherPlayer);
 }
