@@ -34,7 +34,7 @@ let doubleJump = false;
 
 function preload() {
   // this.load.image('player', 'assets/sprites/player_placeholder.png');
-  this.load.atlas('fox', '../assets/sprites/fox.png', '../assets/sprites/fox.json');
+  this.load.spritesheet('fox', '../assets/sprites/fox.png', {frameWidth: 32,  frameHeight:32});
   this.load.image('otherPlayer', 'assets/enemyBlack5.png');
   this.load.image('star', 'assets/star_gold.png');
   this.load.image('other', 'assets/enemyBlack5.png');
@@ -109,11 +109,36 @@ function create() {
   // Animations
   this.anims.create({
     key: "idle",
+    frameRate: 8,
     frames: this.anims.generateFrameNumbers("fox", {
-      start: 1,
-      end: 3
+      start: 0,
+      end: 4
     }),
     repeat: -1
+  })
+
+  this.anims.create({
+    key: "run",
+    frameRate: 16,
+    frames: this.anims.generateFrameNumbers("fox", {
+      start: 28,
+      end: 35
+    }),
+    repeat: -1
+  })
+
+  this.anims.create({
+    key:"jump",
+    frameRate: 6,
+    frames: this.anims.generateFrameNumbers("fox", {
+      start: 45,
+      end: 52
+    }),
+  })
+
+  this.anims.create({
+    key:"fall",
+
   })
 
   //Game Timer 
@@ -196,7 +221,7 @@ function create() {
     doubleJump = false;
 
   });
- 
+  
 }
 
 
@@ -205,27 +230,37 @@ function create() {
 function update() {
 
   setTimeout(() => {
-  
-  
-    this.player.setOnCollide
-  
-    this.player.body.isSensor = false; // Enable collisions
-    this.player.body.restitution = 0; // Set restitution to 0 to prevent bouncing off surfaces
+    this.player.body.isSensor = false; 
+    this.player.body.restitution = 0; 
     this.player.body.airFriction = 0.2;
     this.player.body.friction = 0.15;
     const maxSpeed = 12;
     let acceleration = 1.5;
-  
+
+    this.player.setFixedRotation(true);
+
     if (this.cursors.left.isDown) {
+      if (this.player.body.velocity.y === 0) {
+        this.player.play("run", true)
+      }
       this.player.setVelocityX(this.player.body.velocity.x - acceleration);
       this.player.setFlipX(true); // Flip the sprite horizontally
     }
     // Check for right arrow key press
     else if (this.cursors.right.isDown) {
+      if (this.player.body.velocity.y === 0) {
+        this.player.play("run", true)
+      }
       this.player.setVelocityX(this.player.body.velocity.x + acceleration);
       this.player.setFlipX(false); // Reset the sprite's flip
     }
-  
+    else if (this.cursors.left.isUp && this.cursors.right.isUp) {
+      if (this.player.body.velocity.y === 0) {
+        this.player.play("idle", true);
+      }
+    }
+      
+
     if (this.player.body.velocity.x > maxSpeed) {
       this.player.setVelocityX(maxSpeed);
     } else if (this.player.body.velocity.x < -maxSpeed) {
@@ -236,12 +271,14 @@ function update() {
   
     if (spaceBar.isDown) {
       if (canJump) {
+        this.player.play("jump")
         this.player.setVelocityY(-30); // Adjust the desired jump velocity
         canJump = false;
         justJumped = true;
       }
   
       if (doubleJump) {
+        this.player.anims.restart();
         this.player.setVelocityY(-30); // Adjust the desired jump velocity
         doubleJump = false;
         justJumped = false;
@@ -279,7 +316,7 @@ function update() {
   // });
 
 function addPlayer(self, playerInfo) {
-  self.player = self.matter.add.sprite(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
+  self.player = self.matter.add.sprite(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setScale(4);
   // console.log("SELF PLAYER", self.player)
 }
 
