@@ -89,13 +89,13 @@ io.on('connection', function(socket) {
   });
 
   // when a player moves, update the player data
-  socket.on('playerMovement', function(movementData) {
+  // socket.on('playerMovement', function(movementData) {
 
-    players[socket.id].x = movementData.x;
-    players[socket.id].y = movementData.y;
-    players[socket.id].rotation = movementData.rotation;
-    // emit a message to all players about the player that moved
-    socket.broadcast.emit('playerMoved', players[socket.id]);
+  //   players[socket.id].x = movementData.x;
+  //   players[socket.id].y = movementData.y;
+  //   players[socket.id].rotation = movementData.rotation;
+  //   // emit a message to all players about the player that moved
+  //   socket.broadcast.emit('playerMoved', players[socket.id]);
 
 
 
@@ -110,6 +110,43 @@ io.on('connection', function(socket) {
     //   io.emit('starLocation', star);
     //   io.emit('scoreUpdate', scores);
     // });
+  // });
+
+  // Function to check if two players overlap
+  function checkOverlap(player1, player2) {
+    const distanceX = Math.abs(player1.x - player2.x);
+    const distanceY = Math.abs(player1.y - player2.y);
+    const overlapThreshold = 50; // Adjust this threshold as needed
+
+    return distanceX <= overlapThreshold && distanceY <= overlapThreshold;
+  }
+  
+  // when a player moves, update the player data
+  socket.on('playerMovement', function(movementData) {
+    const currentPlayer = players[socket.id];
+    currentPlayer.x = movementData.x;
+    currentPlayer.y = movementData.y;
+    currentPlayer.rotation = movementData.rotation;
+
+    // Emit a message to all players about the player that moved
+    socket.broadcast.emit('playerMoved', currentPlayer);
+
+    // Check for overlap between the two players
+    const playerIds = Object.keys(players);
+    if (playerIds.length === 2) {
+      const player1 = players[playerIds[0]];
+      const player2 = players[playerIds[1]];
+
+      // Check if players overlap based on their positions
+      const overlap = checkOverlap(player1, player2);
+      if (overlap) {
+        // Players are overlapping, perform necessary actions
+        io.emit('playersOverlap'); // Emit an event when players overlap
+        console.log('Players are overlapping!');
+        // You can store a variable or perform any required actions here
+      }
+      return overlap;
+    }
   });
 
 });
