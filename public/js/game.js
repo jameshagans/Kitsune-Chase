@@ -83,6 +83,15 @@ function create() {
         }
       });
     });
+
+    // Event listener for playersOverlap event
+    this.socket.on('playersOverlap', function() {
+    // Perform game reset logic here
+      console.log('Players are overlapping! Resetting the game...');
+      // Reset the game by reloading the page or showing a reset screen
+      // You can use appropriate game reset logic based on your game requirements
+      location.reload(); // Reload the page as an example
+    });
   
 
   // Background image 
@@ -128,11 +137,6 @@ function create() {
   this.moveSpeed = 1600;
   this.acceleration = 1000;
   this.deceleration = 500;
-
-  // TESTING Log mouse position on click 
-  this.input.on('pointerdown', function(pointer) {
-   // console.log('Mouse Position:', pointer.x, pointer.y);
-  });
 
   //this.player = this.matter.add.sprite(2000, 2000, 'star').setScale(4);
   this.canJump = true;
@@ -182,36 +186,8 @@ function create() {
     justJumped = false;
     doubleJump = false;
 
-
-    event.pairs.forEach(function (pair) {
-      const { bodyA, bodyB } = pair;
-      console.log('bodyA: ',bodyA)
-      console.log('bodyb: ',bodyB)
-    
-      // Check if collision involves the player and other players
-      if (
-        (bodyA.gameObject === this.player && bodyB.gameObject === this.otherPlayers) ||
-        (bodyA.gameObject === this.otherPlayers && bodyB.gameObject === this.player)
-      ) {
-        // Handle the collision logic here
-        handleCollision();
-      }
-    });
-
-
   });
-
-  setTimeout(() => {
-    console.log('Player: ', this.player)
-    
-  }, 2000)
-  setTimeout(() => {
-    console.log('otherguy: ', this.otherPlayers.children)
-    
-  }, 5000)
-
-
-  
+ 
 }
 
 
@@ -302,13 +278,8 @@ function addOtherPlayers(self, playerInfo) {
   const otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setDisplaySize(100, 80);
   otherPlayer.playerId = playerInfo.playerId;
   self.otherPlayers.add(otherPlayer);
-  // console.log('OTERPLAYER: ', otherPlayer)
+  // console.log('OTTERPLAYER: ', otherPlayer)
 }
 
-
-function handleCollision() {
-  // Do something when player and otherPlayer collide
-  alert("Collision detected between player and otherPlayer!");
-}
 
 
