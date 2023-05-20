@@ -93,6 +93,16 @@ function create() {
       location.reload(); // Reload the page as an example
     });
   
+  
+    $(() => {
+      $(".start").on("click", () => {
+        $(".startPage").css({"display" : "none"});
+      });
+
+      $(".restart").on("click", () => {
+        $(".gameOverPage").css({"display" : "none"});
+      });
+    });
 
   // Background image 
   const backgroundImage = this.add.image(0, 0, 'stage_one').setOrigin(0);
@@ -129,9 +139,9 @@ function create() {
 
   this.anims.create({
     key:"jump",
-    frameRate: 6,
+    frameRate: 8,
     frames: this.anims.generateFrameNumbers("fox", {
-      start: 45,
+      start: 44,
       end: 52
     }),
   })
@@ -142,7 +152,7 @@ function create() {
   })
 
   //Game Timer 
-  this.timerSeconds = 120; // 2 minutes in seconds
+  this.timerSeconds = 5; // 2 minutes in seconds
   this.timerText = this.add.text(300, 16, '', { fontSize: '32px', fill: '#000' });
 
   this.timer = setInterval(() => {
@@ -151,6 +161,10 @@ function create() {
     this.timerText.setText('Time: ' + this.timerSeconds);
 
     if (this.timerSeconds <= 0) {
+      $(() => {
+        $(".gameOverPage").css({"display" : "block"});
+      })
+
       alert('Game Over!!');
       //handleGameOver();
       clearInterval(this.timer); // Stop the timer
@@ -219,7 +233,6 @@ function create() {
     canJump = true;
     justJumped = false;
     doubleJump = false;
-
   });
   
 }
@@ -236,6 +249,8 @@ function update() {
     this.player.body.friction = 0.15;
     const maxSpeed = 12;
     let acceleration = 1.5;
+    this.player.body.width = 20;    
+    this.player.body.height = 15;
 
     this.player.setFixedRotation(true);
 
