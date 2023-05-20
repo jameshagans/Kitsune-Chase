@@ -90,14 +90,12 @@ function create() {
   // Event listener for playersOverlap event
   this.socket.on('playersOverlap', function() {
     // Perform game reset logic here
-    console.log('Players are overlapping! Resetting the game...');
-    // Reset the game by reloading the page or showing a reset screen
-    // You can use appropriate game reset logic based on your game requirements
-    clearInterval(this.timer);
-    location.reload(); // Reload the page as an example
-  });
-
-
+      console.log('Players are overlapping! Resetting the game...');
+      // Reset the game by reloading the page or showing a reset screen
+      // You can use appropriate game reset logic based on your game requirements
+      location.reload(); // Reload the page as an example
+    });
+  
 
   // Background image 
   const backgroundImage = this.add.image(0, 0, 'stage_one').setOrigin(0);
@@ -136,7 +134,7 @@ function create() {
     key: "jump",
     frameRate: 6,
     frames: this.anims.generateFrameNumbers("fox", {
-      start: 45,
+      start: 44,
       end: 52
     }),
   });
@@ -224,6 +222,7 @@ function create() {
         this.socket.emit('escaped');
         //handleGameOver();
         clearInterval(this.timer); // Stop the timer
+
       }
     }, 1000); // Update the timer every second (1000 milliseconds)
 
@@ -242,6 +241,8 @@ function update() {
     this.player.body.friction = 0.15;
     const maxSpeed = 12;
     let acceleration = 1.5;
+    this.player.body.width = 20;    
+    this.player.body.height = 15;
 
     this.player.setFixedRotation(true);
 
