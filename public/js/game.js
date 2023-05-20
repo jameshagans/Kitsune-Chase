@@ -92,17 +92,6 @@ function create() {
       // You can use appropriate game reset logic based on your game requirements
       location.reload(); // Reload the page as an example
     });
-  
-  
-    $(() => {
-      $(".start").on("click", () => {
-        $(".startPage").css({"display" : "none"});
-      });
-
-      $(".restart").on("click", () => {
-        $(".gameOverPage").css({"display" : "none"});
-      });
-    });
 
   // Background image 
   const backgroundImage = this.add.image(0, 0, 'stage_one').setOrigin(0);
@@ -171,6 +160,32 @@ function create() {
     }
   }, 1000); // Update the timer every second (1000 milliseconds)
 
+  $(() => {
+    $(".start").on("mouseenter", () => {
+      $(".start").css({"font-size" : "90px"});
+    });
+
+    $(".start").on("mouseleave", () => {
+      $(".start").css({"font-size" : "80px"});
+    });
+
+    $(".start").on("click", () => {
+      $(".startPage").css({"display" : "none"});
+    });
+
+    $(".restart").on("click", () => {
+      $(".gameOverPage").css({"display" : "none"});
+      this.timerSeconds = 5;
+    });
+
+    $(".restart").on("mouseenter", () => {
+      $(".restart").css({"font-size" : "70px"});
+    });
+
+    $(".restart").on("mouseleave", () => {
+      $(".restart").css({"font-size" : "60px"});
+    });
+  });
 
   this.blueScoreText = this.add.text(16, 16, '', { fontSize: '32px', fill: '#0000FF' });
   this.redScoreText = this.add.text(584, 16, '', { fontSize: '32px', fill: '#FF0000' });
