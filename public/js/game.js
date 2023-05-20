@@ -95,7 +95,6 @@ function create() {
       // You can use appropriate game reset logic based on your game requirements
       location.reload(); // Reload the page as an example
     });
-  
 
   // Background image 
   const backgroundImage = this.add.image(0, 0, 'stage_one').setOrigin(0);
@@ -131,8 +130,8 @@ function create() {
   });
 
   this.anims.create({
-    key: "jump",
-    frameRate: 6,
+    key:"jump",
+    frameRate: 8,
     frames: this.anims.generateFrameNumbers("fox", {
       start: 44,
       end: 52
@@ -142,6 +141,53 @@ function create() {
   this.anims.create({
     key: "fall",
 
+  })
+
+  //Game Timer 
+  this.timerSeconds = 5; // 2 minutes in seconds
+  this.timerText = this.add.text(300, 16, '', { fontSize: '32px', fill: '#000' });
+
+  this.timer = setInterval(() => {
+    this.timerSeconds--;
+
+    this.timerText.setText('Time: ' + this.timerSeconds);
+
+    if (this.timerSeconds <= 0) {
+      $(() => {
+        $(".gameOverPage").css({"display" : "block"});
+      })
+
+      alert('Game Over!!');
+      //handleGameOver();
+      clearInterval(this.timer); // Stop the timer
+    }
+  }, 1000); // Update the timer every second (1000 milliseconds)
+
+  $(() => {
+    $(".start").on("mouseenter", () => {
+      $(".start").css({"font-size" : "90px"});
+    });
+
+    $(".start").on("mouseleave", () => {
+      $(".start").css({"font-size" : "80px"});
+    });
+
+    $(".start").on("click", () => {
+      $(".startPage").css({"display" : "none"});
+    });
+
+    $(".restart").on("click", () => {
+      $(".gameOverPage").css({"display" : "none"});
+      this.timerSeconds = 5;
+    });
+
+    $(".restart").on("mouseenter", () => {
+      $(".restart").css({"font-size" : "70px"});
+    });
+
+    $(".restart").on("mouseleave", () => {
+      $(".restart").css({"font-size" : "60px"});
+    });
   });
 
   this.blueScoreText = this.add.text(16, 16, '', { fontSize: '32px', fill: '#0000FF' });
@@ -205,7 +251,6 @@ function create() {
     canJump = true;
     justJumped = false;
     doubleJump = false;
-
   });
 
 
