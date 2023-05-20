@@ -23,14 +23,13 @@ app.use('*', function(req, res) {
 
 io.on('connection', function(socket) {
   console.log('a user connected');
-  connectedPlayers++;
+  connectedPlayers += 1;
+console.log(connectedPlayers)
 
-  if (connectedPlayers > 2) {
-    console.log('player limit reached');
-    socket.disconnect(true);
-    return;
+  if (connectedPlayers > 1) {
+    socket.emit('twoPlayersConnected')
   }
-
+  
   // create a new player and add it to our players object
   const playerLength = Object.keys(players);
   if (playerLength.length < 2) {
@@ -86,8 +85,15 @@ io.on('connection', function(socket) {
     delete players[socket.id];
     // emit a message to all players to remove this player
     io.emit('disconnected', socket.id);
-  });
 
+    
+  });
+  
+  socket.on('escaped', () => {
+    scores.red += 1;
+    console.log('received escape event')
+    io.emit('scoreUpdate', scores)
+  })
   // when a player moves, update the player data
   // socket.on('playerMovement', function(movementData) {
 
@@ -140,6 +146,8 @@ io.on('connection', function(socket) {
       // Check if players overlap based on their positions
       const overlap = checkOverlap(player1, player2);
       if (overlap) {
+        scores.blue += 1;
+        io.emit('scoreUpdate', scores)
         // Players are overlapping, perform necessary actions
         io.emit('playersOverlap'); // Emit an event when players overlap
         console.log('Players are overlapping!');
@@ -148,6 +156,8 @@ io.on('connection', function(socket) {
       return overlap;
     }
   });
+
+
 
 });
 

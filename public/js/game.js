@@ -23,8 +23,6 @@ const config = {
   }
 };
 
-const { Pairs } = Matter; 
-
 
 const game = new Phaser.Game(config);
 let canJump = true;
@@ -32,9 +30,13 @@ let justJumped = false;
 let inAir = false;
 let doubleJump = false;
 
+let connectedPlayers = 0;
+let p1Score = 0;
+let p2Score = 0;
+
 function preload() {
   // this.load.image('player', 'assets/sprites/player_placeholder.png');
-  this.load.spritesheet('fox', '../assets/sprites/fox.png', {frameWidth: 32,  frameHeight:32});
+  this.load.spritesheet('fox', '../assets/sprites/fox.png', { frameWidth: 32, frameHeight: 32 });
   this.load.image('otherPlayer', 'assets/enemyBlack5.png');
   this.load.image('star', 'assets/star_gold.png');
   this.load.image('other', 'assets/enemyBlack5.png');
@@ -51,48 +53,51 @@ function create() {
   this.socket = io();
   this.otherPlayers = this.add.group();
   this.cursors = this.input.keyboard.createCursorKeys();
-     // Players joining
-     this.socket.on('currentPlayers', function(players) {
-      Object.keys(players).forEach(function(id) {
-        if (players[id].playerId === self.socket.id) {
-             addPlayer(self, players[id]);
-        } else {
-           addOtherPlayers(self, players[id]);
-        }
-      });
+  // Players joining
+  this.socket.on('currentPlayers', function(players) {
+    Object.keys(players).forEach(function(id) {
+      if (players[id].playerId === self.socket.id) {
+        addPlayer(self, players[id]);
+      } else {
+        addOtherPlayers(self, players[id]);
+      }
     });
+  });
 
-    this.socket.on('newPlayer', function(playerInfo) {
-      addOtherPlayers(self, playerInfo);
-    });
-    
-    this.socket.on('disconnected', function(playerId) {
-      self.otherPlayers.getChildren().forEach(function(otherPlayer) {
-        if (playerId === otherPlayer.playerId) {
-          otherPlayer.destroy();
-        }
-      });
-    });
-  
-  
-    this.socket.on('playerMoved', function(playerInfo) {
-      self.otherPlayers.getChildren().forEach(function(otherPlayer) {
-        if (playerInfo.playerId === otherPlayer.playerId) {
-          otherPlayer.setRotation(playerInfo.rotation);
-          otherPlayer.setPosition(playerInfo.x, playerInfo.y);
-        }
-      });
-    });
+  this.socket.on('newPlayer', function(playerInfo) {
+    addOtherPlayers(self, playerInfo);
+  });
 
-    // Event listener for playersOverlap event
-    this.socket.on('playersOverlap', function() {
+  this.socket.on('disconnected', function(playerId) {
+    self.otherPlayers.getChildren().forEach(function(otherPlayer) {
+      if (playerId === otherPlayer.playerId) {
+        otherPlayer.destroy();
+      }
+    });
+  });
+
+
+  this.socket.on('playerMoved', function(playerInfo) {
+    self.otherPlayers.getChildren().forEach(function(otherPlayer) {
+      if (playerInfo.playerId === otherPlayer.playerId) {
+        otherPlayer.setRotation(playerInfo.rotation);
+        otherPlayer.setPosition(playerInfo.x, playerInfo.y);
+      }
+    });
+  });
+
+
+  // Event listener for playersOverlap event
+  this.socket.on('playersOverlap', function() {
     // Perform game reset logic here
-      console.log('Players are overlapping! Resetting the game...');
-      // Reset the game by reloading the page or showing a reset screen
-      // You can use appropriate game reset logic based on your game requirements
-      location.reload(); // Reload the page as an example
-    });
-  
+    console.log('Players are overlapping! Resetting the game...');
+    // Reset the game by reloading the page or showing a reset screen
+    // You can use appropriate game reset logic based on your game requirements
+    clearInterval(this.timer);
+    location.reload(); // Reload the page as an example
+  });
+
+
 
   // Background image 
   const backgroundImage = this.add.image(0, 0, 'stage_one').setOrigin(0);
@@ -115,7 +120,7 @@ function create() {
       end: 4
     }),
     repeat: -1
-  })
+  });
 
   this.anims.create({
     key: "run",
@@ -125,45 +130,28 @@ function create() {
       end: 35
     }),
     repeat: -1
-  })
+  });
 
   this.anims.create({
-    key:"jump",
+    key: "jump",
     frameRate: 6,
     frames: this.anims.generateFrameNumbers("fox", {
       start: 45,
       end: 52
     }),
-  })
+  });
 
   this.anims.create({
-    key:"fall",
+    key: "fall",
 
-  })
-
-  //Game Timer 
-  this.timerSeconds = 120; // 2 minutes in seconds
-  this.timerText = this.add.text(300, 16, '', { fontSize: '32px', fill: '#000' });
-
-  this.timer = setInterval(() => {
-    this.timerSeconds--;
-
-    this.timerText.setText('Time: ' + this.timerSeconds);
-
-    if (this.timerSeconds <= 0) {
-      alert('Game Over!!');
-      //handleGameOver();
-      clearInterval(this.timer); // Stop the timer
-    }
-  }, 1000); // Update the timer every second (1000 milliseconds)
-
+  });
 
   this.blueScoreText = this.add.text(16, 16, '', { fontSize: '32px', fill: '#0000FF' });
   this.redScoreText = this.add.text(584, 16, '', { fontSize: '32px', fill: '#FF0000' });
 
   this.socket.on('scoreUpdate', function(scores) {
-    self.blueScoreText.setText('Player 1: ' + scores.blue);
-    self.redScoreText.setText('Player 2: ' + scores.red);
+    self.blueScoreText.setText('P1 - Chaser: ' + scores.blue);
+    self.redScoreText.setText('P2 - Escapee: ' + scores.red);
   });
 
   // Define movement variables
@@ -215,13 +203,31 @@ function create() {
   bottomPlatform.setOrigin(0, 0);
   bottomPlatform.setStatic(true);
 
-  this.matter.world.on('collisionstart', function (event, bodyA, bodyB) {
+  this.matter.world.on('collisionstart', function(event, bodyA, bodyB) {
     canJump = true;
     justJumped = false;
     doubleJump = false;
 
   });
+
+
+  //Game Timer 
+  this.timerSeconds = 30; // 2 minutes in seconds
+  this.timerText = this.add.text(300, 16, '', { fontSize: '32px', fill: '#000' });
   
+    this.timer = setInterval(() => {
+      this.timerSeconds--;
+
+      this.timerText.setText('Time: ' + this.timerSeconds);
+
+      if (this.timerSeconds <= 0) {
+        this.socket.emit('escaped');
+        //handleGameOver();
+        clearInterval(this.timer); // Stop the timer
+      }
+    }, 1000); // Update the timer every second (1000 milliseconds)
+
+
 }
 
 
@@ -230,8 +236,8 @@ function create() {
 function update() {
 
   setTimeout(() => {
-    this.player.body.isSensor = false; 
-    this.player.body.restitution = 0; 
+    this.player.body.isSensor = false;
+    this.player.body.restitution = 0;
     this.player.body.airFriction = 0.2;
     this.player.body.friction = 0.15;
     const maxSpeed = 12;
@@ -241,7 +247,7 @@ function update() {
 
     if (this.cursors.left.isDown) {
       if (this.player.body.velocity.y === 0) {
-        this.player.play("run", true)
+        this.player.play("run", true);
       }
       this.player.setVelocityX(this.player.body.velocity.x - acceleration);
       this.player.setFlipX(true); // Flip the sprite horizontally
@@ -249,7 +255,7 @@ function update() {
     // Check for right arrow key press
     else if (this.cursors.right.isDown) {
       if (this.player.body.velocity.y === 0) {
-        this.player.play("run", true)
+        this.player.play("run", true);
       }
       this.player.setVelocityX(this.player.body.velocity.x + acceleration);
       this.player.setFlipX(false); // Reset the sprite's flip
@@ -259,24 +265,24 @@ function update() {
         this.player.play("idle", true);
       }
     }
-      
+
 
     if (this.player.body.velocity.x > maxSpeed) {
       this.player.setVelocityX(maxSpeed);
     } else if (this.player.body.velocity.x < -maxSpeed) {
       this.player.setVelocityX(-maxSpeed);
     }
-  
+
     spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-  
+
     if (spaceBar.isDown) {
       if (canJump) {
-        this.player.play("jump")
+        this.player.play("jump");
         this.player.setVelocityY(-30); // Adjust the desired jump velocity
         canJump = false;
         justJumped = true;
       }
-  
+
       if (doubleJump) {
         this.player.anims.restart();
         this.player.setVelocityY(-30); // Adjust the desired jump velocity
@@ -284,11 +290,11 @@ function update() {
         justJumped = false;
       }
     }
-  
+
     if (!spaceBar.isDown && justJumped) {
       doubleJump = true;
     }
-  
+
     // emit player movement
     const x = this.player.x;
     const y = this.player.y;
@@ -302,29 +308,38 @@ function update() {
       y: this.player.y,
       rotation: this.player.rotation
     };
-  
-   }, 2000)
- 
+
+  }, 500);
+
 }
-  //KEEP IN CASE WE ADD COLLECTABLE ITEMS
-  // this.socket.on('starLocation', function(starLocation) {
-  //   if (self.star) self.star.destroy();
-  //   self.star = self.physics.add.image(starLocation.x, starLocation.y, 'star');
-  //   self.physics.add.overlap(self.player, self.star, function() {
-  //     this.socket.emit('starCollected');
-  //   }, null, self);
-  // });
+//KEEP IN CASE WE ADD COLLECTABLE ITEMS
+// this.socket.on('starLocation', function(starLocation) {
+//   if (self.star) self.star.destroy();
+//   self.star = self.physics.add.image(starLocation.x, starLocation.y, 'star');
+//   self.physics.add.overlap(self.player, self.star, function() {
+//     this.socket.emit('starCollected');
+//   }, null, self);
+// });
 
 function addPlayer(self, playerInfo) {
+  connectedPlayers += 1;
   self.player = self.matter.add.sprite(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setScale(4);
-  // console.log("SELF PLAYER", self.player)
+  console.log('players connected: ', connectedPlayers);
+
 }
 
 function addOtherPlayers(self, playerInfo) {
+  connectedPlayers += 1;
   const otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setDisplaySize(100, 80);
   otherPlayer.playerId = playerInfo.playerId;
   self.otherPlayers.add(otherPlayer);
+  console.log('players connected: ', connectedPlayers);
   // console.log('OTTERPLAYER: ', otherPlayer)
+}
+
+function reloadScreen() {
+  location.reload()
+  return
 }
 
 
