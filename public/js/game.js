@@ -1,8 +1,8 @@
 const config = {
   type: Phaser.AUTO,
   parent: 'phaser-example',
-  width: 1600,
-  height: 1150,
+  width: 1200,
+  height: 900,
   physics: {
     default: 'matter',
     matter: {
@@ -94,16 +94,44 @@ function create() {
     });
 
   // Background image 
-  const backgroundImage = this.add.image(0, 0, 'stage_one').setOrigin(0);
+  // const backgroundImage = this.add.image(0, 0, 'stage_one').setOrigin(0);
 
-  // Adjust the scale of the image to fit the screen
-  const screenWidth = this.cameras.main.width;
-  const screenHeight = this.cameras.main.height;
-  const scaleRatio = Math.max(screenWidth / backgroundImage.width, screenHeight / backgroundImage.height);
-  backgroundImage.setScale(scaleRatio);
+  // // Adjust the scale of the image to fit the screen
+  // const screenWidth = this.cameras.main.width;
+  // const screenHeight = this.cameras.main.height;
+  // const scaleRatio = Math.max(screenWidth / backgroundImage.width, screenHeight / backgroundImage.height);
+  // backgroundImage.setScale(scaleRatio);
 
-  // Center the image on the screen
-  backgroundImage.setPosition(0, 0);
+  // // Center the image on the screen
+  // backgroundImage.setPosition(0, 0);
+
+  // Background image better scaling
+
+  // Add the background image to the scene
+  backgroundImage = this.add.image(0, 0, 'stage_one').setOrigin(0);
+
+  // Make the background image interactive for handling resize events
+  backgroundImage.setInteractive();
+
+  // Resize the image initially to fit the screen
+  resizeBackgroundImage.call(this);
+
+  // Listen for window resize events and update the image scale accordingly
+  window.addEventListener('resize', resizeBackgroundImage.bind(this));
+
+  function resizeBackgroundImage() {
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+  
+    // Adjust the scale of the image to fit the screen
+    const scaleRatio = Math.max(screenWidth / backgroundImage.width, screenHeight / backgroundImage.height);
+    backgroundImage.setScale(scaleRatio);
+  
+    // Center the image on the screen
+    backgroundImage.setPosition(0, 0);
+  }
+
+
 
   // Animations
   this.anims.create({
@@ -141,50 +169,50 @@ function create() {
   })
 
   //Game Timer 
-  this.timerSeconds = 5; // 2 minutes in seconds
-  this.timerText = this.add.text(300, 16, '', { fontSize: '32px', fill: '#000' });
+  // this.timerSeconds = 5; // 2 minutes in seconds
+  // this.timerText = this.add.text(300, 16, '', { fontSize: '32px', fill: '#000' });
 
-  this.timer = setInterval(() => {
-    this.timerSeconds--;
+  // this.timer = setInterval(() => {
+  //   this.timerSeconds--;
 
-    this.timerText.setText('Time: ' + this.timerSeconds);
+  //   this.timerText.setText('Time: ' + this.timerSeconds);
 
-    if (this.timerSeconds <= 0) {
-      $(() => {
-        $(".gameOverPage").css({"display" : "block"});
-      })
+  //   if (this.timerSeconds <= 0) {
+  //     $(() => {
+  //       $(".gameOverPage").css({"display" : "block"});
+  //     })
 
-      alert('Game Over!!');
-      //handleGameOver();
-      clearInterval(this.timer); // Stop the timer
-    }
-  }, 1000); // Update the timer every second (1000 milliseconds)
+  //     alert('Game Over!!');
+  //     //handleGameOver();
+  //     clearInterval(this.timer); // Stop the timer
+  //   }
+  // }, 1000); // Update the timer every second (1000 milliseconds)
 
   $(() => {
     $(".start").on("mouseenter", () => {
-      $(".start").css({"font-size" : "90px"});
+      $(".start").css({"font-size": "9vw"});
     });
-
+  
     $(".start").on("mouseleave", () => {
-      $(".start").css({"font-size" : "80px"});
+      $(".start").css({"font-size": "8vw"});
     });
-
+  
     $(".start").on("click", () => {
-      $(".startPage").css({"display" : "none"});
+      $(".startPage").css({"display": "none"});
     });
-
-    $(".restart").on("click", () => {
-      $(".gameOverPage").css({"display" : "none"});
-      this.timerSeconds = 5;
-    });
-
-    $(".restart").on("mouseenter", () => {
-      $(".restart").css({"font-size" : "70px"});
-    });
-
-    $(".restart").on("mouseleave", () => {
-      $(".restart").css({"font-size" : "60px"});
-    });
+  
+  //   $(".restart").on("click", () => {
+  //     $(".gameOverPage").css({"display": "none"});
+  //     this.timerSeconds = 5;
+  //   });
+  
+  //   $(".restart").on("mouseenter", () => {
+  //     $(".restart").css({"font-size": "7vw"});
+  //   });
+  
+  //   $(".restart").on("mouseleave", () => {
+  //     $(".restart").css({"font-size": "6vw"});
+  //   });
   });
 
   this.blueScoreText = this.add.text(16, 16, '', { fontSize: '32px', fill: '#0000FF' });
