@@ -1,8 +1,8 @@
 const config = {
   type: Phaser.AUTO,
   parent: 'phaser-example',
-  width: 1200,
-  height: 900,
+  width: 1000,
+  height: 800,
   physics: {
     default: 'matter',
     matter: {
@@ -39,6 +39,7 @@ function preload() {
   this.load.image('star', 'assets/star_gold.png');
   this.load.image('other', 'assets/enemyBlack5.png');
   this.load.image('stage_one', 'assets/tiles/foxgate-city-day.png');
+  this.load.image('background', 'assets/tiles/background-smaller.png');
   this.load.image('stage_one_platform_ground', 'assets/tiles/foxgate-city-day-platform.PNG');
   this.load.image('stage_one_platform_roof-1-pink', 'assets/tiles/foxgate-city-day-platform-roof-1-pink.PNG');
   this.load.image('stage_one_platform_roof-2-orange', 'assets/tiles/foxgate-city-day-platform-roof-2-orange.PNG');
@@ -108,7 +109,7 @@ function create() {
   // Background image better scaling
 
   // Add the background image to the scene
-  backgroundImage = this.add.image(0, 0, 'stage_one').setOrigin(0);
+  backgroundImage = this.add.image(0, 0, 'background').setOrigin(0);
 
   // Make the background image interactive for handling resize events
   backgroundImage.setInteractive();
