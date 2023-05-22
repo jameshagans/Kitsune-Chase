@@ -1,0 +1,83 @@
+body {
+  display: flex;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  flex-wrap: wrap;
+  order: 1;
+  background-color: black;
+  color: rgb(255, 255, 255);
+}
+
+.startPage {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  height: 100vh;
+  width: 100vw;
+  background: url(../assets/tiles/foxgate-city-day.png) center;
+  background-size: cover;
+}
+
+.gameOverPage {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  height: 100vh;
+  width: 100vw;
+  background: url(../assets/tiles/foxgate-city-night.png) center;
+  background-size: cover;
+  display: none;
+}
+
+.start {
+  z-index: 7;
+  margin-top: 15vh;
+  margin-left: 20vw;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 8vw;
+  background-color: transparent;
+  color: rgb(255, 255, 255);
+  border: none;
+  text-shadow: 1px 1px 1px 1px black;
+}
+
+.title {
+  z-index: 7;
+  margin-top: 20vh;
+  margin-left: 20vw;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 8vw;
+  background-color: transparent;
+  color: rgb(255, 255, 255);
+  border: none;
+  text-shadow: 1px 1px 1px 1px black;
+}
+
+.gameOver {
+  z-index: 7;
+  margin-top: 20vh;
+  margin-left: 29vw;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 11vw;
+  background-color: transparent;
+  color: rgb(255, 255, 255);
+  border: none;
+  text-shadow: 1px 1px 1px 1px black;
+}
+
+.restart {
+  z-index: 7;
+  margin-top: 8vh;
+  margin-left: 3vw;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 6vw;
+  background-color: transparent;
+  color: rgb(255, 255, 255);
+  border: none;
+  text-shadow: 1px 1px 1px 1px black;
+}
