@@ -2,8 +2,8 @@ const config = {
   type: Phaser.AUTO,
   parent: 'phaser-example',
   title: 'Kitsune-Chase',
-  width: 1200,
-  height: 900,
+  width: 1600,
+  height: 1200,
   title: "Kitsune-chase",
   physics: {
     default: 'matter',
