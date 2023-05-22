@@ -4,6 +4,7 @@ const config = {
   title: 'Kitsune-Chase',
   width: 1200,
   height: 900,
+  title: "Kitsune-chase",
   physics: {
     default: 'matter',
     matter: {
@@ -24,7 +25,6 @@ const config = {
   }
 };
 
-
 const game = new Phaser.Game(config);
 let canJump = true;
 let justJumped = false;
@@ -34,11 +34,6 @@ let isReloaded = false;
 let connectedPlayers = 0;
 const playerAPosition = [];
 const playerBPosition = [];
-
-
-let connectedPlayers = 0;
-let p1Score = 0;
-let p2Score = 0;
 
 function preload() {
   // this.load.image('player', 'assets/sprites/player_placeholder.png');
@@ -302,15 +297,12 @@ function create() {
   bottomPlatform.setStatic(true);
 
   this.matter.world.on('collisionstart', function(event, bodyA, bodyB) {
-  this.matter.world.on('collisionstart', function(event, bodyA, bodyB) {
     canJump = true;
     justJumped = false;
     doubleJump = false;
   });
   
 }
-
-
 
 
 function update() {
