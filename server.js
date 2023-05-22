@@ -10,9 +10,11 @@ const star = {
   y: Math.floor(Math.random() * 500) + 50
 };
 const scores = {
-  blue: 0,
-  red: 0
+  p1: 0,
+  p2: 0
 };
+
+let timer = 90; 
 
 let connectedPlayers = 0;
 
@@ -26,8 +28,8 @@ io.on('connection', function(socket) {
   connectedPlayers += 1;
 console.log(connectedPlayers)
 
-  if (connectedPlayers > 1) {
-    socket.emit('twoPlayersConnected')
+  if(connectedPlayers === 2) {
+    socket.emit('twoPlayers')
   }
   
   // create a new player and add it to our players object
@@ -46,7 +48,7 @@ console.log(connectedPlayers)
       // Assign to the opposite team if there is already a player
       const existingPlayer = players[playerLength[0]];
       const newPlayerTeam = existingPlayer.team === 'red' ? 'blue' : 'red';
-      const newPlayerX = existingPlayer.team === 'red' ? 1376 : 356; // Change the x-coordinate for the opposite team
+      const newPlayerX = existingPlayer.team === 'red' ? 1375 : 356; // Change the x-coordinate for the opposite team
       players[socket.id] = {
         rotation: 0,
         x: newPlayerX,
@@ -67,7 +69,7 @@ console.log(connectedPlayers)
   console.log('Players: ', players);
 
   // send the star object to the new player
-  socket.emit('starLocation', star);
+  // socket.emit('starLocation', star);
   // send the current scores
   socket.emit('scoreUpdate', scores);
 
@@ -86,14 +88,22 @@ console.log(connectedPlayers)
     // emit a message to all players to remove this player
     io.emit('disconnected', socket.id);
 
-    
   });
-  
-  socket.on('escaped', () => {
-    scores.red += 1;
-    console.log('received escape event')
-    io.emit('scoreUpdate', scores)
-  })
+
+    function reduceTimer () {
+      setInterval(() => {
+        timer--;
+        if(timer === 0) { 
+          io.emit('gameOver')
+        }
+        io.emit('timeUpdate', timer);
+      }, 1000)
+    }
+
+    if(connectedPlayers > 1) {
+      reduceTimer()
+    }
+
   // when a player moves, update the player data
   // socket.on('playerMovement', function(movementData) {
 
@@ -146,8 +156,9 @@ console.log(connectedPlayers)
       // Check if players overlap based on their positions
       const overlap = checkOverlap(player1, player2);
       if (overlap) {
-        scores.blue += 1;
-        io.emit('scoreUpdate', scores)
+        scores.p1 += 1;
+        io.emit('scoreUpdate', scores);
+
         // Players are overlapping, perform necessary actions
         io.emit('playersOverlap'); // Emit an event when players overlap
         console.log('Players are overlapping!');
@@ -157,7 +168,10 @@ console.log(connectedPlayers)
     }
   });
 
-
+  // socket.on('escaped',() => {
+  //   scores.p2 += 0.5;
+  //   io.emit('scoreUpdate', scores);
+  // })
 
 });
 

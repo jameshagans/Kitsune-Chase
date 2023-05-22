@@ -3,6 +3,7 @@ const config = {
   parent: 'phaser-example',
   width: 1600,
   height: 1150,
+  title: 'Kitsune-Chase',
   physics: {
     default: 'matter',
     matter: {
@@ -29,6 +30,11 @@ let canJump = true;
 let justJumped = false;
 let inAir = false;
 let doubleJump = false;
+let isReloaded = false;
+let connectedPlayers = 0;
+const playerAPosition = [];
+const playerBPosition = [];
+
 
 let connectedPlayers = 0;
 let p1Score = 0;
@@ -48,12 +54,13 @@ function preload() {
 
 
 function create() {
-  //const player = this.physics.add.sprite(350, 0, 'player'); 
+
   const self = this;
   this.socket = io();
   this.otherPlayers = this.add.group();
   this.cursors = this.input.keyboard.createCursorKeys();
-  // Players joining
+
+  // Players joining crete players
   this.socket.on('currentPlayers', function(players) {
     Object.keys(players).forEach(function(id) {
       if (players[id].playerId === self.socket.id) {
@@ -86,15 +93,20 @@ function create() {
     });
   });
 
-
-  // Event listener for playersOverlap event
-  this.socket.on('playersOverlap', function() {
+    // Event listener for playersOverlap event
+    this.socket.on('playersOverlap', function() {
     // Perform game reset logic here
-      console.log('Players are overlapping! Resetting the game...');
-      // Reset the game by reloading the page or showing a reset screen
-      // You can use appropriate game reset logic based on your game requirements
-      location.reload(); // Reload the page as an example
+    console.log('Players are overlapping! Resetting the game...');
+  
+    //reset player positions
+    self.player.setPosition(playerAPosition[0], playerAPosition[1]);
+    self.otherPlayers.getChildren().forEach(function(otherPlayer) {
+      otherPlayer.setPosition(playerBPosition[0], playerBPosition[1]);
     });
+
+
+  });
+
 
   // Background image 
   const backgroundImage = this.add.image(0, 0, 'stage_one').setOrigin(0);
@@ -141,16 +153,23 @@ function create() {
   this.anims.create({
     key: "fall",
 
-  })
+  });
 
-  //Game Timer 
-  this.timerSeconds = 5; // 2 minutes in seconds
+  //this.timerSeconds = 10; // 2 minutes in seconds
   this.timerText = this.add.text(300, 16, '', { fontSize: '32px', fill: '#000' });
 
-  this.timer = setInterval(() => {
-    this.timerSeconds--;
+  // this.timer = setInterval(() => {
+  //   this.timerSeconds--;
 
-    this.timerText.setText('Time: ' + this.timerSeconds);
+  //   this.timerText.setText('Time: ' + this.timerSeconds);
+
+  //   if (this.timerSeconds <= 0) {
+  //     this.socket.emit('escaped');
+  //     //handleGameOver();
+  //     clearInterval(this.timer); // Stop the timer
+  //     location.reload()
+  //   }
+  // }, 1000); // Update the timer every second (1000 milliseconds)
 
     if (this.timerSeconds <= 0) {
       $(() => {
@@ -194,8 +213,9 @@ function create() {
   this.redScoreText = this.add.text(584, 16, '', { fontSize: '32px', fill: '#FF0000' });
 
   this.socket.on('scoreUpdate', function(scores) {
-    self.blueScoreText.setText('P1 - Chaser: ' + scores.blue);
-    self.redScoreText.setText('P2 - Escapee: ' + scores.red);
+    self.blueScoreText.setText('P1 Chaser: ' + scores.p1);
+    self.redScoreText.setText('P2 Escapee: ' + scores.p2);
+    console.log('scores: ', scores);
   });
 
   // Define movement variables
@@ -248,36 +268,22 @@ function create() {
   bottomPlatform.setStatic(true);
 
   this.matter.world.on('collisionstart', function(event, bodyA, bodyB) {
+  this.matter.world.on('collisionstart', function(event, bodyA, bodyB) {
     canJump = true;
     justJumped = false;
     doubleJump = false;
   });
-
-
-  //Game Timer 
-  this.timerSeconds = 30; // 2 minutes in seconds
-  this.timerText = this.add.text(300, 16, '', { fontSize: '32px', fill: '#000' });
   
-    this.timer = setInterval(() => {
-      this.timerSeconds--;
-
-      this.timerText.setText('Time: ' + this.timerSeconds);
-
-      if (this.timerSeconds <= 0) {
-        this.socket.emit('escaped');
-        //handleGameOver();
-        clearInterval(this.timer); // Stop the timer
-
-      }
-    }, 1000); // Update the timer every second (1000 milliseconds)
-
-
 }
 
 
 
 
 function update() {
+
+  this.socket.on('twoPLayers', () => {
+
+  });
 
   setTimeout(() => {
     this.player.body.isSensor = false;
@@ -355,9 +361,23 @@ function update() {
       rotation: this.player.rotation
     };
 
-  }, 500);
+  }, 2000);
 
-}
+  this.socket.on('timeUpdate', (timer) => {
+    this.timerText.setText('Time: ' + timer);
+  });
+  this.socket.on('gameOver', () => {
+    this.timerText.visible = false;
+
+  });
+
+
+
+} // end of update function 
+
+
+
+
 //KEEP IN CASE WE ADD COLLECTABLE ITEMS
 // this.socket.on('starLocation', function(starLocation) {
 //   if (self.star) self.star.destroy();
@@ -370,16 +390,18 @@ function update() {
 function addPlayer(self, playerInfo) {
   connectedPlayers += 1;
   self.player = self.matter.add.sprite(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setScale(4);
-  console.log('players connected: ', connectedPlayers);
-
+  playerAPosition.push(playerInfo.x, playerInfo.y)
+  connectedPlayers++;
+  // console.log("SELF PLAYER", self.player)
 }
 
 function addOtherPlayers(self, playerInfo) {
   connectedPlayers += 1;
   const otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setDisplaySize(100, 80);
+  playerBPosition.push(playerInfo.x, playerInfo.y)
   otherPlayer.playerId = playerInfo.playerId;
   self.otherPlayers.add(otherPlayer);
-  console.log('players connected: ', connectedPlayers);
+  connectedPlayers++;
   // console.log('OTTERPLAYER: ', otherPlayer)
 }
 
