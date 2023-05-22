@@ -346,6 +346,10 @@ function update() {
     this.player.body.friction = 0.15;
     const maxSpeed = 12;
     let acceleration = 1.5;
+
+
+    // No sprite rotation
+    this.player.setFixedRotation(true);
   
     if (this.cursors.left.isDown) {
       if (this.player.body.velocity.y === 0) {
