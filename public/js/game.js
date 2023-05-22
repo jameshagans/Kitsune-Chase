@@ -42,6 +42,9 @@ function preload() {
   this.load.image('stage_one_platform_ground', 'assets/tiles/foxgate-city-day-platform.PNG');
   this.load.image('stage_one_platform_roof-1-pink', 'assets/tiles/foxgate-city-day-platform-roof-1-pink.PNG');
   this.load.image('stage_one_platform_roof-2-orange', 'assets/tiles/foxgate-city-day-platform-roof-2-orange.PNG');
+  this.load.audio('jump', '../assets/sounds/jump-3.wav');
+  this.load.audio('music', '../assets/sounds/music.mp3');
+  this.load.audio('walk', '../assets/sounds/run-sound-1.wav');
 }
 
 
@@ -167,6 +170,11 @@ function create() {
     key:"fall",
 
   })
+
+  this.jumpSound = this.sound.add('jump');
+  this.bgMusic = this.sound.add('music');
+  this.bgMusic.play({volume: 0.05, loop: true});
+  this.walkSound = this.sound.add('walk');
 
   //Game Timer 
   // this.timerSeconds = 5; // 2 minutes in seconds
@@ -299,7 +307,8 @@ function update() {
 
     if (this.cursors.left.isDown) {
       if (this.player.body.velocity.y === 0) {
-        this.player.play("run", true)
+        this.player.play("run", true);
+        this.walkSound.play();
       }
       this.player.setVelocityX(this.player.body.velocity.x - acceleration);
       this.player.setFlipX(true); // Flip the sprite horizontally
@@ -307,7 +316,8 @@ function update() {
     // Check for right arrow key press
     else if (this.cursors.right.isDown) {
       if (this.player.body.velocity.y === 0) {
-        this.player.play("run", true)
+        this.player.play("run", true);
+        this.walkSound.play();
       }
       this.player.setVelocityX(this.player.body.velocity.x + acceleration);
       this.player.setFlipX(false); // Reset the sprite's flip
@@ -329,13 +339,16 @@ function update() {
   
     if (spaceBar.isDown) {
       if (canJump) {
-        this.player.play("jump")
+        this.jumpSound.play();
+        this.player.play("jump");
         this.player.setVelocityY(-30); // Adjust the desired jump velocity
         canJump = false;
         justJumped = true;
+        
       }
   
       if (doubleJump) {
+        this.jumpSound.play();
         this.player.anims.restart();
         this.player.setVelocityY(-30); // Adjust the desired jump velocity
         doubleJump = false;
