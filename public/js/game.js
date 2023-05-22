@@ -337,7 +337,6 @@ function update() {
     if (this.cursors.left.isDown) {
       if (this.player.body.velocity.y === 0) {
         this.player.play("run", true);
-        this.walkSound.play();
       }
       this.player.setVelocityX(this.player.body.velocity.x - acceleration);
       this.player.setFlipX(true); // Flip the sprite horizontally
@@ -346,7 +345,6 @@ function update() {
     else if (this.cursors.right.isDown) {
       if (this.player.body.velocity.y === 0) {
         this.player.play("run", true);
-        this.walkSound.play();
       }
       this.player.setVelocityX(this.player.body.velocity.x + acceleration);
       this.player.setFlipX(false); // Reset the sprite's flip
