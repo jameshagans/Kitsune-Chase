@@ -23,3 +23,8 @@ Use `SPACE` to `JUMP`
 # Wireframe 
 
 ![wireframe](https://github.com/jameshagans/Kitsune-Chase/blob/master/public/assets/kitsune-chase-wireframe.drawio.png?raw=true)
+
+# Credits
+
+* fox sprite: https://elthen.itch.io/
+* tilesheet: https://penzilla.itch.io/japanese-city-kawaii-tileset, https://www.patreon.com/penzilla 
