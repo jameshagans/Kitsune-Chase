@@ -3,7 +3,7 @@ const config = {
   parent: 'phaser-example',
   title: 'Kitsune-Chase',
   width: 1600,
-  height: 1200,
+  height: 1300,
   physics: {
     default: 'matter',
     matter: {
@@ -266,11 +266,11 @@ function create() {
   
 
 
-  const platformGround1 = this.matter.add.image(300, 948, 'stage_one_platform_ground');
+  const platformGround1 = this.matter.add.image(300, 1048, 'stage_one_platform_ground');
   platformGround1.setStatic(true);
   platformGround1.setScale(0.6); // Shrink the platform by a scale 
 
-  const platformGround2 = this.matter.add.image(768, 948, 'stage_one_platform_ground');
+  const platformGround2 = this.matter.add.image(768, 1048, 'stage_one_platform_ground');
   platformGround2.setStatic(true);
 
   platformGround2.setScale(0.6); // Shrink the platform by a scale 
