@@ -44,18 +44,10 @@ function preload() {
   this.load.image('stage_one_platform_ground', 'assets/tiles/foxgate-city-day-platform.PNG');
   this.load.image('stage_one_platform_roof-1-pink', 'assets/tiles/foxgate-city-day-platform-roof-1-pink.PNG');
   this.load.image('stage_one_platform_roof-2-orange', 'assets/tiles/foxgate-city-day-platform-roof-2-orange.PNG');
-  // Load png of background 
-  this.load.image('background', 'assets/tiles/background.png')
-
-  // this.load.tilemapTiledJSON('tilemap', 'assets/tiles/tileset-pink.json')
-
-  // Load exported json of tilemap
-  // this.load.tilemapTiledJSON('tilemap', 'assets/tiles/tilemap-pink.json')
-
-  // Load exported json tilemap
-  // this.load.tilemapTiledJSON('map', 'assets/tiles/tilemap-pink.json')
-
-
+  this.load.audio('jump', '../assets/sounds/jump-3.wav');
+  this.load.audio('music', '../assets/sounds/music.mp3');
+  this.load.audio('walk', '../assets/sounds/run-sound-1.wav');
+  this.load.audio('tag', '../assets/sounds/tag-sound-2.wav');
 }
 
 
@@ -64,6 +56,7 @@ function create() {
   this.socket = io();
   this.otherPlayers = this.add.group();
   this.cursors = this.input.keyboard.createCursorKeys();
+  this.tagSound = this.sound.add('tag');
 
   // Players joining create players
   this.socket.on('currentPlayers', function(players) {
@@ -88,7 +81,7 @@ function create() {
     });
   });
 
-
+  
   this.socket.on('playerMoved', function(playerInfo) {
     self.otherPlayers.getChildren().forEach(function(otherPlayer) {
       if (playerInfo.playerId === otherPlayer.playerId) {
@@ -100,14 +93,16 @@ function create() {
 
     // Event listener for playersOverlap event
     this.socket.on('playersOverlap', function() {
-    // Perform game reset logic here
+      // Perform game reset logic here
 
-    console.log('Players are overlapping! Resetting the game...');
-  
-    //reset player positions
-    self.player.setPosition(playerAPosition[0], playerAPosition[1]);
-    self.otherPlayers.getChildren().forEach(function(otherPlayer) {
-      otherPlayer.setPosition(playerBPosition[0], playerBPosition[1]);
+      // Play tag sound (NOT WORKING)
+      // this.tagSound.play();
+      console.log('Players are overlapping! Resetting the game...');
+    
+      //reset player positions
+      self.player.setPosition(playerAPosition[0], playerAPosition[1]);
+      self.otherPlayers.getChildren().forEach(function(otherPlayer) {
+        otherPlayer.setPosition(playerBPosition[0], playerBPosition[1]);
     });
   });
 
@@ -192,6 +187,14 @@ function create() {
   });
 
 
+  this.jumpSound = this.sound.add('jump');
+  this.bgMusic = this.sound.add('music');
+  this.bgMusic.play({volume: 0.05, loop: true});
+  this.walkSound = this.sound.add('walk');
+
+  //Game Timer 
+  // this.timerSeconds = 5; // 2 minutes in seconds
+  // this.timerText = this.add.text(300, 16, '', { fontSize: '32px', fill: '#000' });
   //this.timerSeconds = 10; // 2 minutes in seconds
   this.timerText = this.add.text(300, 16, '', { fontSize: '32px', fill: '#000' });
 
@@ -234,6 +237,20 @@ function create() {
     $(".start").on("click", () => {
       $(".startPage").css({"display": "none"});
     });
+
+    $(".restart").on("click", () => {
+      $(".gameOverPage").css({"display": "none"});
+      this.timerSeconds = 5;
+    });
+
+    $(".restart").on("mouseenter", () => {
+      $(".restart").css({"font-size": "7vw"});
+    });
+
+    $(".restart").on("mouseleave", () => {
+      $(".restart").css({"font-size": "6vw"});
+    });
+
   }); 
     
   //Game Timer 
@@ -362,13 +379,17 @@ function update() {
 
     if (spaceBar.isDown) {
       if (canJump) {
+        this.jumpSound.play();
         this.player.play("jump");
         this.player.setVelocityY(-30); // Adjust the desired jump velocity
         canJump = false;
         justJumped = true;
+        
       }
 
       if (doubleJump) {
+        this.jumpSound.play();
+        this.player.anims.restart();
         this.player.setVelocityY(-30); // Adjust the desired jump velocity
         doubleJump = false;
         justJumped = false;
