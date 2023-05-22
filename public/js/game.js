@@ -59,13 +59,37 @@ function preload() {
 
 
 function create() {
+  let taggerPlayer = null; 
   const self = this;
   this.socket = io();
   this.otherPlayers = this.add.group();
   this.cursors = this.input.keyboard.createCursorKeys();
 
+
+  // Create jQuery Start Page
+  $(() => {
+    $(".start").on("mouseenter", () => {
+      $(".start").css({"font-size": "6rem"});
+    });
+  
+    $(".start").on("mouseleave", () => {
+      $(".start").css({"font-size": "5rem"});
+    });
+  
+    $(".start").on("click", () => {
+      $(".startPage").css({"display": "none"});
+    });
+
+  }); 
+
+
+  
+    
+
   // Players joining crete players
+  
   this.socket.on('currentPlayers', function(players) {
+    
     Object.keys(players).forEach(function(id) {
       if (players[id].playerId === self.socket.id) {
         addPlayer(self, players[id]);
@@ -74,6 +98,12 @@ function create() {
       }
     });
   });
+
+  // Test
+  setTimeout(() => {
+    console.log('this.player', this.player);  
+  }, 1000); 
+
 
   this.socket.on('newPlayer', function(playerInfo) {
     addOtherPlayers(self, playerInfo);
@@ -111,42 +141,42 @@ function create() {
   });
 
   // Background image 
-  // const backgroundImage = this.add.image(0, 0, 'stage_one').setOrigin(0);
+  const backgroundImage = this.add.image(0, 0, 'stage_one').setOrigin(0);
 
-  // // Adjust the scale of the image to fit the screen
-  // const screenWidth = this.cameras.main.width;
-  // const screenHeight = this.cameras.main.height;
-  // const scaleRatio = Math.max(screenWidth / backgroundImage.width, screenHeight / backgroundImage.height);
-  // backgroundImage.setScale(scaleRatio);
+  // Adjust the scale of the image to fit the screen
+  const screenWidth = this.cameras.main.width;
+  const screenHeight = this.cameras.main.height;
+  const scaleRatio = Math.max(screenWidth / backgroundImage.width, screenHeight / backgroundImage.height);
+  backgroundImage.setScale(scaleRatio);
 
-  // // Center the image on the screen
-  // backgroundImage.setPosition(0, 0);
+  // Center the image on the screen
+  backgroundImage.setPosition(0, 0);
 
   // Background image better scaling
 
   // Add the background image to the scene
-  backgroundImage = this.add.image(0, 0, 'stage_one').setOrigin(0);
+  // backgroundImage = this.add.image(0, 0, 'stage_one').setOrigin(0);
 
-  // Make the background image interactive for handling resize events
-  backgroundImage.setInteractive();
+  // // Make the background image interactive for handling resize events
+  // backgroundImage.setInteractive();
 
   // Resize the image initially to fit the screen
-  resizeBackgroundImage.call(this);
+  // resizeBackgroundImage.call(this);
 
   // Listen for window resize events and update the image scale accordingly
-  window.addEventListener('resize', resizeBackgroundImage.bind(this));
+  // window.addEventListener('resize', resizeBackgroundImage.bind(this));
 
-  function resizeBackgroundImage() {
-    const screenWidth = window.innerWidth;
-    const screenHeight = window.innerHeight;
+  // function resizeBackgroundImage() {
+  //   const screenWidth = window.innerWidth;
+  //   const screenHeight = window.innerHeight;
   
-    // Adjust the scale of the image to fit the screen
-    const scaleRatio = Math.max(screenWidth / backgroundImage.width, screenHeight / backgroundImage.height);
-    backgroundImage.setScale(scaleRatio);
+  //   // Adjust the scale of the image to fit the screen
+  //   const scaleRatio = Math.max(screenWidth / backgroundImage.width, screenHeight / backgroundImage.height);
+  //   backgroundImage.setScale(scaleRatio);
   
-    // Center the image on the screen
-    backgroundImage.setPosition(0, 0);
-  }
+  //   // Center the image on the screen
+  //   backgroundImage.setPosition(0, 0);
+  // }
 
 
 
@@ -187,7 +217,7 @@ function create() {
   });
 
 
-  //this.timerSeconds = 10; // 2 minutes in seconds
+  // this.timerSeconds = 10; // 2 minutes in seconds
   this.timerText = this.add.text(300, 16, '', { fontSize: '32px', fill: '#000' });
 
   // this.timer = setInterval(() => {
@@ -217,35 +247,17 @@ function create() {
   // }, 1000); // Update the timer every second (1000 milliseconds)
 
 
-  $(() => {
-    $(".start").on("mouseenter", () => {
-      $(".start").css({"font-size": "9vw"});
-    });
-  
-    $(".start").on("mouseleave", () => {
-      $(".start").css({"font-size": "8vw"});
-    });
-  
-    $(".start").on("click", () => {
-      $(".startPage").css({"display": "none"});
-    });
-  }); 
-    
-  //Game Timer 
-  this.timerSeconds = 120; // 2 minutes in seconds
-  this.timerText = this.add.text(300, 16, '', { fontSize: '32px', fill: '#000' });
 
-  this.timer = setInterval(() => {
-    this.timerSeconds--;
+  // //Game Timer (Moved to server)
+  // this.timerSeconds = 120; // 2 minutes in seconds
+  // this.timerText = this.add.text(300, 16, '', { fontSize: '32px', fill: '#000' });
 
-    this.timerText.setText('Time: ' + this.timerSeconds);
+  // this.timer = setInterval(() => {
+  //   this.timerSeconds--;
 
-    if (this.timerSeconds <= 0) {
-      alert('Game Over!!');
-      //handleGameOver();
-      clearInterval(this.timer); // Stop the timer
-    }
-  }, 1000); // Update the timer every second (1000 milliseconds)
+  //   this.timerText.setText('Time: ' + this.timerSeconds);
+
+
   
 
   this.blueScoreText = this.add.text(16, 16, '', { fontSize: '32px', fill: '#0000FF' });
@@ -261,11 +273,11 @@ function create() {
   
 
 
-  const platformGround1 = this.matter.add.image(300, 948, 'stage_one_platform_ground');
+  const platformGround1 = this.matter.add.image(300, 1048, 'stage_one_platform_ground');
   platformGround1.setStatic(true);
   platformGround1.setScale(0.6); // Shrink the platform by a scale 
 
-  const platformGround2 = this.matter.add.image(768, 948, 'stage_one_platform_ground');
+  const platformGround2 = this.matter.add.image(768, 1048, 'stage_one_platform_ground');
   platformGround2.setStatic(true);
 
   platformGround2.setScale(0.6); // Shrink the platform by a scale 
@@ -398,7 +410,14 @@ function update() {
 
   });
 
-
+  // Tagger swap on win
+  this.socket.on('playersOverlap', function() {
+    // if(this.players.team)
+    if (this.taggerPlayer) {
+      console.log('Tagger exists')
+      // Assign 
+    }
+  }); 
 
 } // end of update function 
 
