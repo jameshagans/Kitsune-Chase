@@ -1,8 +1,10 @@
 const config = {
   type: Phaser.AUTO,
   parent: 'phaser-example',
-  width: 1200,
-  height: 900,
+  title: 'Kitsune-Chase',
+  width: 1600,
+  height: 1200,
+  title: "Kitsune-chase",
   physics: {
     default: 'matter',
     matter: {
@@ -23,18 +25,19 @@ const config = {
   }
 };
 
-const { Pairs } = Matter; 
-
-
 const game = new Phaser.Game(config);
 let canJump = true;
 let justJumped = false;
 let inAir = false;
 let doubleJump = false;
+let isReloaded = false;
+let connectedPlayers = 0;
+const playerAPosition = [];
+const playerBPosition = [];
 
 function preload() {
   // this.load.image('player', 'assets/sprites/player_placeholder.png');
-  this.load.spritesheet('fox', '../assets/sprites/fox.png', {frameWidth: 32,  frameHeight:32});
+  this.load.spritesheet('fox', '../assets/sprites/fox.png', { frameWidth: 32, frameHeight: 32 });
   this.load.image('otherPlayer', 'assets/enemyBlack5.png');
   this.load.image('star', 'assets/star_gold.png');
   this.load.image('other', 'assets/enemyBlack5.png');
@@ -49,52 +52,60 @@ function preload() {
 
 
 function create() {
-  //const player = this.physics.add.sprite(350, 0, 'player'); 
+
   const self = this;
   this.socket = io();
   this.otherPlayers = this.add.group();
   this.cursors = this.input.keyboard.createCursorKeys();
-     // Players joining
-     this.socket.on('currentPlayers', function(players) {
-      Object.keys(players).forEach(function(id) {
-        if (players[id].playerId === self.socket.id) {
-             addPlayer(self, players[id]);
-        } else {
-           addOtherPlayers(self, players[id]);
-        }
-      });
-    });
 
-    this.socket.on('newPlayer', function(playerInfo) {
-      addOtherPlayers(self, playerInfo);
+  // Players joining crete players
+  this.socket.on('currentPlayers', function(players) {
+    Object.keys(players).forEach(function(id) {
+      if (players[id].playerId === self.socket.id) {
+        addPlayer(self, players[id]);
+      } else {
+        addOtherPlayers(self, players[id]);
+      }
     });
-    
-    this.socket.on('disconnected', function(playerId) {
-      self.otherPlayers.getChildren().forEach(function(otherPlayer) {
-        if (playerId === otherPlayer.playerId) {
-          otherPlayer.destroy();
-        }
-      });
+  });
+
+  this.socket.on('newPlayer', function(playerInfo) {
+    addOtherPlayers(self, playerInfo);
+  });
+
+  this.socket.on('disconnected', function(playerId) {
+    self.otherPlayers.getChildren().forEach(function(otherPlayer) {
+      if (playerId === otherPlayer.playerId) {
+        otherPlayer.destroy();
+      }
     });
-  
-  
-    this.socket.on('playerMoved', function(playerInfo) {
-      self.otherPlayers.getChildren().forEach(function(otherPlayer) {
-        if (playerInfo.playerId === otherPlayer.playerId) {
-          otherPlayer.setRotation(playerInfo.rotation);
-          otherPlayer.setPosition(playerInfo.x, playerInfo.y);
-        }
-      });
+  });
+
+
+  this.socket.on('playerMoved', function(playerInfo) {
+    self.otherPlayers.getChildren().forEach(function(otherPlayer) {
+      if (playerInfo.playerId === otherPlayer.playerId) {
+        otherPlayer.setRotation(playerInfo.rotation);
+        otherPlayer.setPosition(playerInfo.x, playerInfo.y);
+      }
     });
+  });
 
     // Event listener for playersOverlap event
     this.socket.on('playersOverlap', function() {
     // Perform game reset logic here
-      console.log('Players are overlapping! Resetting the game...');
-      // Reset the game by reloading the page or showing a reset screen
-      // You can use appropriate game reset logic based on your game requirements
-      location.reload(); // Reload the page as an example
+
+    console.log('Players are overlapping! Resetting the game...');
+  
+    //reset player positions
+    self.player.setPosition(playerAPosition[0], playerAPosition[1]);
+    self.otherPlayers.getChildren().forEach(function(otherPlayer) {
+      otherPlayer.setPosition(playerBPosition[0], playerBPosition[1]);
     });
+
+
+  });
+
 
   // Background image 
   // const backgroundImage = this.add.image(0, 0, 'stage_one').setOrigin(0);
@@ -145,7 +156,7 @@ function create() {
       end: 4
     }),
     repeat: -1
-  })
+  });
 
   this.anims.create({
     key: "run",
@@ -155,21 +166,23 @@ function create() {
       end: 35
     }),
     repeat: -1
-  })
+  });
 
   this.anims.create({
+
     key:"jump",
     frameRate: 8,
     frames: this.anims.generateFrameNumbers("fox", {
       start: 44,
       end: 52
     }),
-  })
+  });
 
   this.anims.create({
-    key:"fall",
+    key: "fall",
 
-  })
+  });
+
 
   this.jumpSound = this.sound.add('jump');
   this.bgMusic = this.sound.add('music');
@@ -179,11 +192,23 @@ function create() {
   //Game Timer 
   // this.timerSeconds = 5; // 2 minutes in seconds
   // this.timerText = this.add.text(300, 16, '', { fontSize: '32px', fill: '#000' });
+  //this.timerSeconds = 10; // 2 minutes in seconds
+  this.timerText = this.add.text(300, 16, '', { fontSize: '32px', fill: '#000' });
 
   // this.timer = setInterval(() => {
   //   this.timerSeconds--;
 
   //   this.timerText.setText('Time: ' + this.timerSeconds);
+
+
+  //   if (this.timerSeconds <= 0) {
+  //     this.socket.emit('escaped');
+  //     //handleGameOver();
+  //     clearInterval(this.timer); // Stop the timer
+  //     location.reload()
+  //   }
+  // }, 1000); // Update the timer every second (1000 milliseconds)
+
 
   //   if (this.timerSeconds <= 0) {
   //     $(() => {
@@ -195,6 +220,7 @@ function create() {
   //     clearInterval(this.timer); // Stop the timer
   //   }
   // }, 1000); // Update the timer every second (1000 milliseconds)
+
 
   $(() => {
     $(".start").on("mouseenter", () => {
@@ -227,8 +253,9 @@ function create() {
   this.redScoreText = this.add.text(584, 16, '', { fontSize: '32px', fill: '#FF0000' });
 
   this.socket.on('scoreUpdate', function(scores) {
-    self.blueScoreText.setText('Player 1: ' + scores.blue);
-    self.redScoreText.setText('Player 2: ' + scores.red);
+    self.blueScoreText.setText('P1 Chaser: ' + scores.p1);
+    self.redScoreText.setText('P2 Escapee: ' + scores.p2);
+    console.log('scores: ', scores);
   });
 
   // Define movement variables
@@ -280,7 +307,7 @@ function create() {
   bottomPlatform.setOrigin(0, 0);
   bottomPlatform.setStatic(true);
 
-  this.matter.world.on('collisionstart', function (event, bodyA, bodyB) {
+  this.matter.world.on('collisionstart', function(event, bodyA, bodyB) {
     canJump = true;
     justJumped = false;
     doubleJump = false;
@@ -289,13 +316,15 @@ function create() {
 }
 
 
-
-
 function update() {
 
+  this.socket.on('twoPLayers', () => {
+
+  });
+
   setTimeout(() => {
-    this.player.body.isSensor = false; 
-    this.player.body.restitution = 0; 
+    this.player.body.isSensor = false;
+    this.player.body.restitution = 0;
     this.player.body.airFriction = 0.2;
     this.player.body.friction = 0.15;
     const maxSpeed = 12;
@@ -327,16 +356,16 @@ function update() {
         this.player.play("idle", true);
       }
     }
-      
+
 
     if (this.player.body.velocity.x > maxSpeed) {
       this.player.setVelocityX(maxSpeed);
     } else if (this.player.body.velocity.x < -maxSpeed) {
       this.player.setVelocityX(-maxSpeed);
     }
-  
+
     spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-  
+
     if (spaceBar.isDown) {
       if (canJump) {
         this.jumpSound.play();
@@ -346,7 +375,7 @@ function update() {
         justJumped = true;
         
       }
-  
+
       if (doubleJump) {
         this.jumpSound.play();
         this.player.anims.restart();
@@ -355,11 +384,11 @@ function update() {
         justJumped = false;
       }
     }
-  
+
     if (!spaceBar.isDown && justJumped) {
       doubleJump = true;
     }
-  
+
     // emit player movement
     const x = this.player.x;
     const y = this.player.y;
@@ -373,29 +402,54 @@ function update() {
       y: this.player.y,
       rotation: this.player.rotation
     };
-  
-   }, 2000)
- 
-}
-  //KEEP IN CASE WE ADD COLLECTABLE ITEMS
-  // this.socket.on('starLocation', function(starLocation) {
-  //   if (self.star) self.star.destroy();
-  //   self.star = self.physics.add.image(starLocation.x, starLocation.y, 'star');
-  //   self.physics.add.overlap(self.player, self.star, function() {
-  //     this.socket.emit('starCollected');
-  //   }, null, self);
-  // });
+
+  }, 2000);
+
+  this.socket.on('timeUpdate', (timer) => {
+    this.timerText.setText('Time: ' + timer);
+  });
+  this.socket.on('gameOver', () => {
+    this.timerText.visible = false;
+
+  });
+
+
+
+} // end of update function 
+
+
+
+
+//KEEP IN CASE WE ADD COLLECTABLE ITEMS
+// this.socket.on('starLocation', function(starLocation) {
+//   if (self.star) self.star.destroy();
+//   self.star = self.physics.add.image(starLocation.x, starLocation.y, 'star');
+//   self.physics.add.overlap(self.player, self.star, function() {
+//     this.socket.emit('starCollected');
+//   }, null, self);
+// });
 
 function addPlayer(self, playerInfo) {
+  connectedPlayers += 1;
   self.player = self.matter.add.sprite(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setScale(4);
+  playerAPosition.push(playerInfo.x, playerInfo.y)
+  connectedPlayers++;
   // console.log("SELF PLAYER", self.player)
 }
 
 function addOtherPlayers(self, playerInfo) {
+  connectedPlayers += 1;
   const otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setDisplaySize(100, 80);
+  playerBPosition.push(playerInfo.x, playerInfo.y)
   otherPlayer.playerId = playerInfo.playerId;
   self.otherPlayers.add(otherPlayer);
+  connectedPlayers++;
   // console.log('OTTERPLAYER: ', otherPlayer)
+}
+
+function reloadScreen() {
+  location.reload()
+  return
 }
 
 
