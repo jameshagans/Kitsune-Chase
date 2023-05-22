@@ -48,6 +48,7 @@ function preload() {
   this.load.audio('jump', '../assets/sounds/jump-3.wav');
   this.load.audio('music', '../assets/sounds/music.mp3');
   this.load.audio('walk', '../assets/sounds/run-sound-1.wav');
+  this.load.audio('tag', '../assets/sounds/tag-sound-2.wav');
 }
 
 
@@ -57,7 +58,7 @@ function create() {
   this.socket = io();
   this.otherPlayers = this.add.group();
   this.cursors = this.input.keyboard.createCursorKeys();
-
+  this.tagSound = this.sound.add('tag');
   // Players joining crete players
   this.socket.on('currentPlayers', function(players) {
     Object.keys(players).forEach(function(id) {
@@ -81,7 +82,7 @@ function create() {
     });
   });
 
-
+  
   this.socket.on('playerMoved', function(playerInfo) {
     self.otherPlayers.getChildren().forEach(function(otherPlayer) {
       if (playerInfo.playerId === otherPlayer.playerId) {
@@ -93,14 +94,14 @@ function create() {
 
     // Event listener for playersOverlap event
     this.socket.on('playersOverlap', function() {
-    // Perform game reset logic here
-
-    console.log('Players are overlapping! Resetting the game...');
-  
-    //reset player positions
-    self.player.setPosition(playerAPosition[0], playerAPosition[1]);
-    self.otherPlayers.getChildren().forEach(function(otherPlayer) {
-      otherPlayer.setPosition(playerBPosition[0], playerBPosition[1]);
+      // Perform game reset logic here
+      this.tagSound.play();
+      console.log('Players are overlapping! Resetting the game...');
+    
+      //reset player positions
+      self.player.setPosition(playerAPosition[0], playerAPosition[1]);
+      self.otherPlayers.getChildren().forEach(function(otherPlayer) {
+        otherPlayer.setPosition(playerBPosition[0], playerBPosition[1]);
     });
 
 
