@@ -24,13 +24,12 @@ body {
   bottom: 0;
   left: 0;
   background-color: rgba(0, 0, 0, 0.4);
-  height: auto;
+  height: 100vh;
   width: 100vw;
   margin-bottom: 2rem;
   background: url(../assets/tiles/foxgate-city-day.png) center;
   background-size: cover;
   /* margin-top: 2rem; */
-  margin-bottom: 2rem;
 }
 
 .gameOverPage {
@@ -52,8 +51,8 @@ body {
   align-items: center;
 
   z-index: 7;
-  margin-top: 15vh;
-  margin-left: 20vw;
+  margin-top: 5vh;
+  /* margin-left: 20vw; */
   font-family: 'Press Start 2P', cursive;
   font-size: 5rem;
   background-color: transparent;
@@ -66,10 +65,10 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   z-index: 7;
   margin-top: 20vh;
-  margin-left: 20vw;
+  /* margin-left: 20vw; */
   font-family: 'Press Start 2P', cursive;
   font-size: 5rem;
   background-color: transparent;

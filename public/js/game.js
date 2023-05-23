@@ -3,7 +3,7 @@ const config = {
   parent: 'phaser-example',
   title: 'Kitsune-Chase',
   width: 1600,
-  height: 900,
+  height: 905,
   physics: {
     default: 'matter',
     matter: {
@@ -120,34 +120,6 @@ function create() {
   // Center the image on the screen
   backgroundImage.setPosition(0, 0);
 
-  // Background image better scaling
-
-  // Add the background image to the scene
-  // backgroundImage = this.add.image(0, 0, 'stage_one').setOrigin(0);
-
-  // // Make the background image interactive for handling resize events
-  // backgroundImage.setInteractive();
-
-  // Resize the image initially to fit the screen
-  // resizeBackgroundImage.call(this);
-
-  // Listen for window resize events and update the image scale accordingly
-  // window.addEventListener('resize', resizeBackgroundImage.bind(this));
-
-  // function resizeBackgroundImage() {
-  //   const screenWidth = window.innerWidth;
-  //   const screenHeight = window.innerHeight;
-  
-  //   // Adjust the scale of the image to fit the screen
-  //   const scaleRatio = Math.max(screenWidth / backgroundImage.width, screenHeight / backgroundImage.height);
-  //   backgroundImage.setScale(scaleRatio);
-  
-  //   // Center the image on the screen
-  //   backgroundImage.setPosition(0, 0);
-  // }
-
-
-
   // Animations
   this.anims.create({
     key: "idle",
@@ -208,11 +180,11 @@ function create() {
 
   $(() => {
     $(".start").on("mouseenter", () => {
-      $(".start").css({"font-size": "9vw"});
+      $(".start").css({"font-size": "6rem"});
     });
   
     $(".start").on("mouseleave", () => {
-      $(".start").css({"font-size": "8vw"});
+      $(".start").css({"font-size": "5rem"});
     });
   
     $(".start").on("click", () => {
@@ -225,11 +197,11 @@ function create() {
     });
 
     $(".restart").on("mouseenter", () => {
-      $(".restart").css({"font-size": "7vw"});
+      $(".restart").css({"font-size": "6rem"});
     });
 
     $(".restart").on("mouseleave", () => {
-      $(".restart").css({"font-size": "6vw"});
+      $(".restart").css({"font-size": "5rem"});
     });
 
   }); 
@@ -246,45 +218,57 @@ function create() {
   
 
   // Platforms
-  const platformGround1 = this.matter.add.image(300, 1048, 'stage_one_platform_ground');
-  platformGround1.setStatic(true);
-  platformGround1.setScale(0.6); // Shrink the platform by a scale 
 
-  const platformGround2 = this.matter.add.image(768, 1048, 'stage_one_platform_ground');
-  platformGround2.setStatic(true);
+  // Right 1 // Adjust the values of x and y to position the platform
+  const platformRoof_R1 = this.matter.add.image(1329, 483, 'stage_one_platform_roof-1-pink');
+  platformRoof_R1.setStatic(true);
+  platformRoof_R1.setScale(0.3); // Shrink the platform by a scale 
 
-  platformGround2.setScale(0.6); // Shrink the platform by a scale 
+  // Right 2 
+  const platformRoof_R2 = this.matter.add.image(1090, 687, 'stage_one_platform_roof-1-pink');
+  platformRoof_R2.setStatic(true);
+  platformRoof_R2.setScale(0.3); // Shrink the platform by a scale 
+ 
+  // Left 1
+  const platformRoof_L1 = this.matter.add.image(380, 525, 'stage_one_platform_roof-2-orange');
+  platformRoof_L1.setStatic(true);
+  platformRoof_L1.setScale(0.3); // Shrink the platform by a scale
 
-  const platformGround3 = this.matter.add.image(1150, 1048, 'stage_one_platform_ground');
-  platformGround3.setStatic(true);
-  platformGround3.setScale(0.6); // Shrink the platform by a scale
+  // Left 2
+  const platformRoof_L2 = this.matter.add.image(380, 300, 'stage_one_platform_roof-2-orange');
+  platformRoof_L2.setStatic(true);
+  platformRoof_L2.setScale(0.3); // Shrink the platform by a scale
 
-  const platformGround4 = this.matter.add.image(1650, 1048, 'stage_one_platform_ground');
-  platformGround4.setStatic(true);
-  platformGround4.setScale(0.6); // Shrink the platform by a scale 
+  // Left 3
+  const platformRoof_L3 = this.matter.add.image(50, 450, 'stage_one_platform_roof-2-orange');
+  platformRoof_L3.setStatic(true);
+  platformRoof_L3.setScale(0.3); // Shrink the platform by a scale
 
+  // LEft 4
+  const platformRoof_L4 = this.matter.add.image(142, 787, 'stage_one_platform_roof-1-pink');
+  platformRoof_L4.setStatic(true);
+  platformRoof_L4.setScale(0.3); // Shrink the platform by a scale 
+  
+  // Center 1
+  const platformRoof_C1 = this.matter.add.image(906, 261, 'stage_one_platform_roof-2-orange');
+  platformRoof_C1.setStatic(true);
+  platformRoof_C1.setScale(0.3); // Shrink the platform by a scale
 
-  const platformRoof1 = this.matter.add.image(1376, 565, 'stage_one_platform_roof-1-pink');
-  platformRoof1.setStatic(true);
-  platformRoof1.setScale(0.6); // Shrink the platform by a scale 
-  // Adjust the values of x and y to position the platform
+  // Center 2
+  const platformRoof_C2 = this.matter.add.image(1005, 261, 'stage_one_platform_roof-2-orange');
+  platformRoof_C2.setStatic(true);
+  platformRoof_C2.setScale(0.3); // Shrink the platform by a scale
+  
+  // Add click event listener to the document for ease of finding platform placement
+  document.addEventListener('click', function(event) {
+  // Get the coordinates of the mouse pointer relative to the document
+  const mouseX = event.clientX;
+  const mouseY = event.clientY;
+  
+  // Log the coordinates to the console
+  console.log('Mouse coordinates:', mouseX, mouseY);
 
-  const platformRoof2 = this.matter.add.image(356, 561, 'stage_one_platform_roof-2-orange');
-  platformRoof2.setStatic(true);
-  platformRoof2.setScale(0.6); // Shrink the platform by a scale
-  // Adjust the values of x and y to position the platform
-
-  const platformRoof3 = this.matter.add.image(906, 261, 'stage_one_platform_roof-2-orange');
-  platformRoof3.setStatic(true);
-  platformRoof3.setScale(0.6); // Shrink the platform by a scale
-  // Adjust the values of x and y to position the platform
-
-  // Create a sprite for the bottom platform
-  const bottomPlatform = this.matter.add.sprite(game.config.width / 2, game.config.height, 'platform');
-
-  // Set origin to center bottom
-  bottomPlatform.setOrigin(0, 0);
-  bottomPlatform.setStatic(true);
+});
 
   this.matter.world.on('collisionstart', function(event, bodyA, bodyB) {
     canJump = true;
@@ -401,18 +385,16 @@ function update() {
 
 
 
-//KEEP IN CASE WE ADD COLLECTABLE ITEMS
-// this.socket.on('starLocation', function(starLocation) {
-//   if (self.star) self.star.destroy();
-//   self.star = self.physics.add.image(starLocation.x, starLocation.y, 'star');
-//   self.physics.add.overlap(self.player, self.star, function() {
-//     this.socket.emit('starCollected');
-//   }, null, self);
-// });
+
+
+
+
+
+
 
 function addPlayer(self, playerInfo) {
   connectedPlayers += 1;
-  self.player = self.matter.add.sprite(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setScale(4);
+  self.player = self.matter.add.sprite(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setScale(3);
   playerAPosition.push(playerInfo.x, playerInfo.y)
   connectedPlayers++;
   // console.log("SELF PLAYER", self.player)
@@ -420,7 +402,7 @@ function addPlayer(self, playerInfo) {
 
 function addOtherPlayers(self, playerInfo) {
   connectedPlayers += 1;
-  const otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setDisplaySize(100, 80);
+  const otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setScale(3);
   playerBPosition.push(playerInfo.x, playerInfo.y)
   otherPlayer.playerId = playerInfo.playerId;
   self.otherPlayers.add(otherPlayer);
