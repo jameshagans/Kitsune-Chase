@@ -1,6 +1,8 @@
 body {
   display: flex;
+  flex-direction: column;
   justify-content: center;
+  align-items: center;
   height: 100%;
   width: 100%;
   flex-wrap: wrap;
@@ -15,6 +17,8 @@ body {
 }
 
 .startPage {
+  display: flex;
+  justify-content: center;
   top: 0;
   right: 0;
   bottom: 0;
@@ -25,6 +29,8 @@ body {
   margin-bottom: 2rem;
   background: url(../assets/tiles/foxgate-city-day.png) center;
   background-size: cover;
+  /* margin-top: 2rem; */
+  margin-bottom: 2rem;
 }
 
 .gameOverPage {
@@ -41,11 +47,15 @@ body {
 }
 
 .start {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
   z-index: 7;
   margin-top: 15vh;
   margin-left: 20vw;
   font-family: 'Press Start 2P', cursive;
-  font-size: 8vw;
+  font-size: 5rem;
   background-color: transparent;
   color: rgb(255, 255, 255);
   border: none;
@@ -53,11 +63,15 @@ body {
 }
 
 .title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   z-index: 7;
   margin-top: 20vh;
   margin-left: 20vw;
   font-family: 'Press Start 2P', cursive;
-  font-size: 8vw;
+  font-size: 5rem;
   background-color: transparent;
   color: rgb(255, 255, 255);
   border: none;

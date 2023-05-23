@@ -3,7 +3,7 @@ const config = {
   parent: 'phaser-example',
   title: 'Kitsune-Chase',
   width: 1600,
-  height: 1300,
+  height: 900,
   physics: {
     default: 'matter',
     matter: {
@@ -40,14 +40,15 @@ function preload() {
   this.load.image('otherPlayer', 'assets/enemyBlack5.png');
   this.load.image('star', 'assets/star_gold.png');
   this.load.image('other', 'assets/enemyBlack5.png');
-  this.load.image('stage_one', 'assets/tiles/foxgate-city-day.png');
+  // this.load.image('stage_one', 'assets/tiles/foxgate-city-day.png');
   this.load.image('stage_one_platform_ground', 'assets/tiles/foxgate-city-day-platform.PNG');
   this.load.image('stage_one_platform_roof-1-pink', 'assets/tiles/foxgate-city-day-platform-roof-1-pink.PNG');
   this.load.image('stage_one_platform_roof-2-orange', 'assets/tiles/foxgate-city-day-platform-roof-2-orange.PNG');
   this.load.audio('jump', '../assets/sounds/jump-3.wav');
   this.load.audio('music', '../assets/sounds/music.mp3');
   this.load.audio('walk', '../assets/sounds/run-sound-1.wav');
-  this.load.audio('tag', '../assets/sounds/tag-sound-2.wav');
+  this.load.audio('start', '../assets/sounds/start.mp3');
+  this.load.image('stage_one', 'assets/tiles/big-map.png');
 }
 
 
@@ -56,7 +57,7 @@ function create() {
   this.socket = io();
   this.otherPlayers = this.add.group();
   this.cursors = this.input.keyboard.createCursorKeys();
-  this.tagSound = this.sound.add('tag');
+  this.startSound = this.sound.add('start');
 
   // Players joining create players
   this.socket.on('currentPlayers', function(players) {
@@ -69,9 +70,6 @@ function create() {
     });
   });
 
-  this.socket.on('newPlayer', function(playerInfo) {
-    addOtherPlayers(self, playerInfo);
-  });
 
   this.socket.on('disconnected', function(playerId) {
     self.otherPlayers.getChildren().forEach(function(otherPlayer) {
@@ -111,42 +109,42 @@ function create() {
 
 
   // Background image 
-  // const backgroundImage = this.add.image(0, 0, 'stage_one').setOrigin(0);
+  const backgroundImage = this.add.image(0, 0, 'stage_one').setOrigin(0);
 
-  // // Adjust the scale of the image to fit the screen
-  // const screenWidth = this.cameras.main.width;
-  // const screenHeight = this.cameras.main.height;
-  // const scaleRatio = Math.max(screenWidth / backgroundImage.width, screenHeight / backgroundImage.height);
-  // backgroundImage.setScale(scaleRatio);
+  // Adjust the scale of the image to fit the screen
+  const screenWidth = this.cameras.main.width;
+  const screenHeight = this.cameras.main.height;
+  const scaleRatio = Math.max(screenWidth / backgroundImage.width, screenHeight / backgroundImage.height);
+  backgroundImage.setScale(scaleRatio);
 
-  // // Center the image on the screen
-  // backgroundImage.setPosition(0, 0);
+  // Center the image on the screen
+  backgroundImage.setPosition(0, 0);
 
   // Background image better scaling
 
   // Add the background image to the scene
-  backgroundImage = this.add.image(0, 0, 'stage_one').setOrigin(0);
+  // backgroundImage = this.add.image(0, 0, 'stage_one').setOrigin(0);
 
-  // Make the background image interactive for handling resize events
-  backgroundImage.setInteractive();
+  // // Make the background image interactive for handling resize events
+  // backgroundImage.setInteractive();
 
   // Resize the image initially to fit the screen
-  resizeBackgroundImage.call(this);
+  // resizeBackgroundImage.call(this);
 
   // Listen for window resize events and update the image scale accordingly
-  window.addEventListener('resize', resizeBackgroundImage.bind(this));
+  // window.addEventListener('resize', resizeBackgroundImage.bind(this));
 
-  function resizeBackgroundImage() {
-    const screenWidth = window.innerWidth;
-    const screenHeight = window.innerHeight;
+  // function resizeBackgroundImage() {
+  //   const screenWidth = window.innerWidth;
+  //   const screenHeight = window.innerHeight;
   
-    // Adjust the scale of the image to fit the screen
-    const scaleRatio = Math.max(screenWidth / backgroundImage.width, screenHeight / backgroundImage.height);
-    backgroundImage.setScale(scaleRatio);
+  //   // Adjust the scale of the image to fit the screen
+  //   const scaleRatio = Math.max(screenWidth / backgroundImage.width, screenHeight / backgroundImage.height);
+  //   backgroundImage.setScale(scaleRatio);
   
-    // Center the image on the screen
-    backgroundImage.setPosition(0, 0);
-  }
+  //   // Center the image on the screen
+  //   backgroundImage.setPosition(0, 0);
+  // }
 
 
 
@@ -389,7 +387,14 @@ function update() {
 
   });
 
-
+  // Tagger swap on win
+  this.socket.on('playersOverlap', function() {
+    // if(this.players.team)
+    if (this.taggerPlayer) {
+      console.log('Tagger exists')
+      // Assign 
+    }
+  }); 
 
 } // end of update function 
 
