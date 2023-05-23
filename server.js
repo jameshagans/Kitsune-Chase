@@ -94,7 +94,8 @@ console.log(connectedPlayers)
       setInterval(() => {
         timer--;
         if(timer <= 0) { 
-          io.emit('gameOver')
+          io.emit('gameOver');
+          
         }
         io.emit('timeUpdate', timer);
       }, 1000)
@@ -156,7 +157,8 @@ console.log(connectedPlayers)
       // Check if players overlap based on their positions
       const overlap = checkOverlap(player1, player2);
       if (overlap) {
-        scores.p1 += 0.5;
+        scores.p1 += 0.1;
+        scores.p1 = Math.ceil(scores.p1);
         io.emit('scoreUpdate', scores);
 
         // Players are overlapping, perform necessary actions

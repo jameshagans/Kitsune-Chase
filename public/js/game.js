@@ -36,9 +36,7 @@ const playerBPosition = [];
 
 function preload() {
   // this.load.image('player', 'assets/sprites/player_placeholder.png');
-  this.load.spritesheet('fox', '../assets/sprites/fox.png', { frameWidth: 32, frameHeight: 32 });
-  this.load.spritesheet('fox1', '../assets/sprites/fox-p1.png', { frameWidth: 24, frameHeight: 18 });
-  this.load.spritesheet('fox2', '../assets/sprites/fox-p2.png', { frameWidth: 24, frameHeight: 18 });
+  this.load.spritesheet('fox', '../assets/sprites/fox-V2.png', { frameWidth: 24, frameHeight: 18 });
   this.load.image('otherPlayer', 'assets/enemyBlack5.png');
   this.load.image('star', 'assets/star_gold.png');
   this.load.image('other', 'assets/enemyBlack5.png');
@@ -50,6 +48,8 @@ function preload() {
   this.load.audio('music', '../assets/sounds/music.mp3');
   this.load.audio('walk', '../assets/sounds/run-sound-1.wav');
   this.load.audio('start', '../assets/sounds/start.mp3');
+  this.load.audio('end', '../assets/sounds/tag-sound-2.wav');
+  this.load.audio('start', '../assets/sounds/tag-sound-1.wav');
   this.load.image('stage_one', 'assets/tiles/big-map.png');
 }
 
@@ -106,12 +106,6 @@ function create() {
     });
   });
 
-  this.socket.on('gameOver', () => {
-    $(".gameOverPage").css({"display" : "block"});
-    $(".gameOverText").html("P2 wins!");
-  })
-
-
 
   // Background image 
   const backgroundImage = this.add.image(0, 0, 'stage_one').setOrigin(0);
@@ -125,39 +119,11 @@ function create() {
   // Center the image on the screen
   backgroundImage.setPosition(0, 0);
 
-  // Background image better scaling
-
-  // Add the background image to the scene
-  // backgroundImage = this.add.image(0, 0, 'stage_one').setOrigin(0);
-
-  // // Make the background image interactive for handling resize events
-  // backgroundImage.setInteractive();
-
-  // Resize the image initially to fit the screen
-  // resizeBackgroundImage.call(this);
-
-  // Listen for window resize events and update the image scale accordingly
-  // window.addEventListener('resize', resizeBackgroundImage.bind(this));
-
-  // function resizeBackgroundImage() {
-  //   const screenWidth = window.innerWidth;
-  //   const screenHeight = window.innerHeight;
-  
-  //   // Adjust the scale of the image to fit the screen
-  //   const scaleRatio = Math.max(screenWidth / backgroundImage.width, screenHeight / backgroundImage.height);
-  //   backgroundImage.setScale(scaleRatio);
-  
-  //   // Center the image on the screen
-  //   backgroundImage.setPosition(0, 0);
-  // }
-
-
-
   // Animations
   this.anims.create({
     key: "idle",
     frameRate: 8,
-    frames: this.anims.generateFrameNumbers("fox1", {
+    frames: this.anims.generateFrameNumbers("fox", {
       start: 0,
       end: 4
     }),
@@ -167,7 +133,7 @@ function create() {
   this.anims.create({
     key: "run",
     frameRate: 16,
-    frames: this.anims.generateFrameNumbers("fox1", {
+    frames: this.anims.generateFrameNumbers("fox", {
       start: 16,
       end: 23
     }),
@@ -175,42 +141,11 @@ function create() {
   });
 
   this.anims.create({
-
     key:"jump",
     frameRate: 8,
-    frames: this.anims.generateFrameNumbers("fox1", {
+    frames: this.anims.generateFrameNumbers("fox", {
       start: 8,
       end: 15
-    }),
-  });
-
-  this.anims.create({
-    key: "idle2",
-    frameRate: 8,
-    frames: this.anims.generateFrameNumbers("fox2", {
-      start: 0,
-      end: 4
-    }),
-    repeat: -1
-  });
-
-  this.anims.create({
-    key: "run2",
-    frameRate: 16,
-    frames: this.anims.generateFrameNumbers("fox2", {
-      start: 5,
-      end: 12
-    }),
-    repeat: -1
-  });
-
-  this.anims.create({
-
-    key:"jump2",
-    frameRate: 8,
-    frames: this.anims.generateFrameNumbers("fox2", {
-      start: 13,
-      end: 20
     }),
   });
 
@@ -219,46 +154,41 @@ function create() {
   this.bgMusic = this.sound.add('music');
   this.walkSound = this.sound.add('walk');
   this.bgMusic.play({volume: 0.05, loop: true});
+  this.startSound = this.sound.add('start');
   // game timer display
   this.timerText = this.add.text(1100, 48, '', { fontSize: '42px', fill: '#fa399a',  fontFamily: 'PressStart2P' });
 
-
-  //   if (this.timerSeconds <= 0) {
-  //     $(() => {
-  //       $(".gameOverPage").css({"display" : "block"});
-  //     })
-
-  //     alert('Game Over!!');
-  //     //handleGameOver();
-  //     clearInterval(this.timer); // Stop the timer
-  //   }
-  // }, 1000); // Update the timer every second (1000 milliseconds)
-
+  
+  this.socket.on('gameOver', () => {
+    $(".gameOverPage").css({"display" : "block"});
+    $(".gameOverText").html("P2 wins!");
+  })
 
   $(() => {
     $(".start").on("mouseenter", () => {
-      $(".start").css({"font-size": "9vw"});
+      $(".start").css({"font-size": "6vw"});
     });
   
     $(".start").on("mouseleave", () => {
-      $(".start").css({"font-size": "8vw"});
+      $(".start").css({"font-size": "5vw"});
     });
   
     $(".start").on("click", () => {
+      this.startSound.play({volume: 0.5});
       $(".startPage").css({"display": "none"});
     });
 
     $(".restart").on("click", () => {
       $(".gameOverPage").css({"display": "none"});
-      this.timerSeconds = 5;
+      this.startSound.play({volume: 0.5});
     });
 
     $(".restart").on("mouseenter", () => {
-      $(".restart").css({"font-size": "7vw"});
+      $(".restart").css({"font-size": "4vw"});
     });
 
     $(".restart").on("mouseleave", () => {
-      $(".restart").css({"font-size": "6vw"});
+      $(".restart").css({"font-size": "3vw"});
     });
 
   }); 
@@ -315,20 +245,19 @@ function create() {
   platformRoof3.setScale(0.6); // Shrink the platform by a scale
   // Adjust the values of x and y to position the platform
 
-  // Create a sprite for the bottom platform
-  const bottomPlatform = this.matter.add.sprite(game.config.width / 2, game.config.height, 'platform');
+  // // Create a sprite for the bottom platform
+  // const bottomPlatform = this.matter.add.sprite(game.config.width / 2, game.config.height, 'platform');
 
-  // Set origin to center bottom
-  bottomPlatform.setOrigin(0, 0);
-  bottomPlatform.setStatic(true);
+  // // Set origin to center bottom
+  // bottomPlatform.setOrigin(0, 0);
+  // bottomPlatform.setStatic(true);
 
   this.matter.world.on('collisionstart', function(event, bodyA, bodyB) {
     canJump = true;
     justJumped = false;
     doubleJump = false;
 
-  });
- 
+  }); 
 }
 
 
@@ -446,7 +375,7 @@ function update() {
 
 function addPlayer(self, playerInfo) {
   connectedPlayers += 1;
-  self.player = self.matter.add.sprite(playerInfo.x, playerInfo.y, 'fox1').setOrigin(0.5, 0.5).setScale(4);
+  self.player = self.matter.add.sprite(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setScale(4);
   playerAPosition.push(playerInfo.x, playerInfo.y)
   connectedPlayers++;
   // console.log("SELF PLAYER", self.player)
@@ -454,7 +383,7 @@ function addPlayer(self, playerInfo) {
 
 function addOtherPlayers(self, playerInfo) {
   connectedPlayers += 1;
-  const otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, 'fox1').setOrigin(0.5, 0.5).setDisplaySize(100, 80);
+  const otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setDisplaySize(100, 80);
   playerBPosition.push(playerInfo.x, playerInfo.y)
   otherPlayer.playerId = playerInfo.playerId;
   self.otherPlayers.add(otherPlayer);
