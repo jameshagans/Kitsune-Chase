@@ -3,7 +3,7 @@ const config = {
   parent: 'phaser-example',
   title: 'Kitsune-Chase',
   width: 1600,
-  height: 1300,
+  height: 900,
   physics: {
     default: 'matter',
     matter: {
@@ -40,14 +40,15 @@ function preload() {
   this.load.image('otherPlayer', 'assets/enemyBlack5.png');
   this.load.image('star', 'assets/star_gold.png');
   this.load.image('other', 'assets/enemyBlack5.png');
-  this.load.image('stage_one', 'assets/tiles/foxgate-city-day.png');
+  // this.load.image('stage_one', 'assets/tiles/foxgate-city-day.png');
   this.load.image('stage_one_platform_ground', 'assets/tiles/foxgate-city-day-platform.PNG');
   this.load.image('stage_one_platform_roof-1-pink', 'assets/tiles/foxgate-city-day-platform-roof-1-pink.PNG');
   this.load.image('stage_one_platform_roof-2-orange', 'assets/tiles/foxgate-city-day-platform-roof-2-orange.PNG');
   this.load.audio('jump', '../assets/sounds/jump-3.wav');
   this.load.audio('music', '../assets/sounds/music.mp3');
   this.load.audio('walk', '../assets/sounds/run-sound-1.wav');
-  this.load.audio('tag', '../assets/sounds/tag-sound-2.wav');
+  this.load.audio('start', '../assets/sounds/start.mp3');
+  this.load.image('stage_one', 'assets/tiles/big-map.png');
 }
 
 
@@ -56,7 +57,7 @@ function create() {
   this.socket = io();
   this.otherPlayers = this.add.group();
   this.cursors = this.input.keyboard.createCursorKeys();
-  this.tagSound = this.sound.add('tag');
+  this.startSound = this.sound.add('start');
 
   // Players joining create players
   this.socket.on('currentPlayers', function(players) {
@@ -342,6 +343,8 @@ function update() {
     this.player.body.friction = 0.15;
     const maxSpeed = 12;
     let acceleration = 1.5;
+    // prevent player from rolling
+    this.player.setFixedRotation(true);
   
     if (this.cursors.left.isDown) {
       if (this.player.body.velocity.y === 0) {
