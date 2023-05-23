@@ -106,7 +106,10 @@ function create() {
     });
   });
 
-
+  this.socket.on('gameOver', () => {
+    $(".gameOverPage").css({"display" : "block"});
+    $(".gameOverText").html("P2 wins!");
+  })
 
 
 
@@ -215,7 +218,7 @@ function create() {
   this.jumpSound = this.sound.add('jump');
   this.bgMusic = this.sound.add('music');
   this.walkSound = this.sound.add('walk');
-
+  this.bgMusic.play({volume: 0.05, loop: true});
   // game timer display
   this.timerText = this.add.text(1100, 48, '', { fontSize: '42px', fill: '#fa399a',  fontFamily: 'PressStart2P' });
 
@@ -332,7 +335,6 @@ function create() {
 function update() {
 
   setTimeout(() => {
-    this.bgMusic.play({volume: 0.05, loop: true});
     this.player.body.isSensor = false;
     this.player.body.restitution = 0;
     this.player.body.airFriction = 0.2;
