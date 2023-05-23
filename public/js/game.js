@@ -72,6 +72,9 @@ function create() {
     });
   });
 
+  this.socket.on('newPlayer', function(playerInfo) {
+    addOtherPlayers(self, playerInfo);
+  });
 
   this.socket.on('disconnected', function(playerId) {
     self.otherPlayers.getChildren().forEach(function(otherPlayer) {
@@ -393,7 +396,7 @@ function addPlayer(self, playerInfo) {
 
 function addOtherPlayers(self, playerInfo) {
   connectedPlayers += 1;
-  const otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setScale(3);
+  const otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setDisplaySize(100, 80);
   playerBPosition.push(playerInfo.x, playerInfo.y)
   otherPlayer.playerId = playerInfo.playerId;
   self.otherPlayers.add(otherPlayer);
