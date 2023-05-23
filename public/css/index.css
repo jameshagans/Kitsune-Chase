@@ -11,6 +11,11 @@ body {
   color: rgb(255, 255, 255);
 }
 
+@font-face {
+  font-family: PressStart2P;
+  src: url('../assets/PressStart2P-Regular.ttf');
+}
+
 .startPage {
   display: flex;
   justify-content: center;
