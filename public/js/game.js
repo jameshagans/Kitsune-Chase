@@ -3,8 +3,7 @@ const config = {
   parent: 'phaser-example',
   title: 'Kitsune-Chase',
   width: 1600,
-  height: 1200,
-  title: "Kitsune-chase",
+  height: 900,
   physics: {
     default: 'matter',
     matter: {
@@ -43,25 +42,26 @@ function preload() {
   this.load.image('otherPlayer', 'assets/enemyBlack5.png');
   this.load.image('star', 'assets/star_gold.png');
   this.load.image('other', 'assets/enemyBlack5.png');
-  this.load.image('stage_one', 'assets/tiles/foxgate-city-day.png');
+  // this.load.image('stage_one', 'assets/tiles/foxgate-city-day.png');
   this.load.image('stage_one_platform_ground', 'assets/tiles/foxgate-city-day-platform.PNG');
   this.load.image('stage_one_platform_roof-1-pink', 'assets/tiles/foxgate-city-day-platform-roof-1-pink.PNG');
   this.load.image('stage_one_platform_roof-2-orange', 'assets/tiles/foxgate-city-day-platform-roof-2-orange.PNG');
   this.load.audio('jump', '../assets/sounds/jump-3.wav');
   this.load.audio('music', '../assets/sounds/music.mp3');
   this.load.audio('walk', '../assets/sounds/run-sound-1.wav');
-  this.load.audio('tag', '../assets/sounds/tag-sound-2.wav');
+  this.load.audio('start', '../assets/sounds/start.mp3');
+  this.load.image('stage_one', 'assets/tiles/big-map.png');
 }
 
 
 function create() {
-
   const self = this;
   this.socket = io();
   this.otherPlayers = this.add.group();
   this.cursors = this.input.keyboard.createCursorKeys();
-  this.tagSound = this.sound.add('tag');
-  // Players joining crete players
+  this.startSound = this.sound.add('start');
+
+  // Players joining create players
   this.socket.on('currentPlayers', function(players) {
     Object.keys(players).forEach(function(id) {
       if (players[id].playerId === self.socket.id) {
@@ -72,9 +72,6 @@ function create() {
     });
   });
 
-  this.socket.on('newPlayer', function(playerInfo) {
-    addOtherPlayers(self, playerInfo);
-  });
 
   this.socket.on('disconnected', function(playerId) {
     self.otherPlayers.getChildren().forEach(function(otherPlayer) {
@@ -97,6 +94,8 @@ function create() {
     // Event listener for playersOverlap event
     this.socket.on('playersOverlap', function() {
       // Perform game reset logic here
+
+      // Play tag sound (NOT WORKING)
       // this.tagSound.play();
       console.log('Players are overlapping! Resetting the game...');
     
@@ -105,48 +104,49 @@ function create() {
       self.otherPlayers.getChildren().forEach(function(otherPlayer) {
         otherPlayer.setPosition(playerBPosition[0], playerBPosition[1]);
     });
-
-
   });
 
 
+
+
+
   // Background image 
-  // const backgroundImage = this.add.image(0, 0, 'stage_one').setOrigin(0);
+  const backgroundImage = this.add.image(0, 0, 'stage_one').setOrigin(0);
 
-  // // Adjust the scale of the image to fit the screen
-  // const screenWidth = this.cameras.main.width;
-  // const screenHeight = this.cameras.main.height;
-  // const scaleRatio = Math.max(screenWidth / backgroundImage.width, screenHeight / backgroundImage.height);
-  // backgroundImage.setScale(scaleRatio);
+  // Adjust the scale of the image to fit the screen
+  const screenWidth = this.cameras.main.width;
+  const screenHeight = this.cameras.main.height;
+  const scaleRatio = Math.max(screenWidth / backgroundImage.width, screenHeight / backgroundImage.height);
+  backgroundImage.setScale(scaleRatio);
 
-  // // Center the image on the screen
-  // backgroundImage.setPosition(0, 0);
+  // Center the image on the screen
+  backgroundImage.setPosition(0, 0);
 
   // Background image better scaling
 
   // Add the background image to the scene
-  backgroundImage = this.add.image(0, 0, 'stage_one').setOrigin(0);
+  // backgroundImage = this.add.image(0, 0, 'stage_one').setOrigin(0);
 
-  // Make the background image interactive for handling resize events
-  backgroundImage.setInteractive();
+  // // Make the background image interactive for handling resize events
+  // backgroundImage.setInteractive();
 
   // Resize the image initially to fit the screen
-  resizeBackgroundImage.call(this);
+  // resizeBackgroundImage.call(this);
 
   // Listen for window resize events and update the image scale accordingly
-  window.addEventListener('resize', resizeBackgroundImage.bind(this));
+  // window.addEventListener('resize', resizeBackgroundImage.bind(this));
 
-  function resizeBackgroundImage() {
-    const screenWidth = window.innerWidth;
-    const screenHeight = window.innerHeight;
+  // function resizeBackgroundImage() {
+  //   const screenWidth = window.innerWidth;
+  //   const screenHeight = window.innerHeight;
   
-    // Adjust the scale of the image to fit the screen
-    const scaleRatio = Math.max(screenWidth / backgroundImage.width, screenHeight / backgroundImage.height);
-    backgroundImage.setScale(scaleRatio);
+  //   // Adjust the scale of the image to fit the screen
+  //   const scaleRatio = Math.max(screenWidth / backgroundImage.width, screenHeight / backgroundImage.height);
+  //   backgroundImage.setScale(scaleRatio);
   
-    // Center the image on the screen
-    backgroundImage.setPosition(0, 0);
-  }
+  //   // Center the image on the screen
+  //   backgroundImage.setPosition(0, 0);
+  // }
 
 
 
@@ -216,25 +216,8 @@ function create() {
   this.bgMusic = this.sound.add('music');
   this.walkSound = this.sound.add('walk');
 
-  //Game Timer 
-  // this.timerSeconds = 5; // 2 minutes in seconds
-  // this.timerText = this.add.text(300, 16, '', { fontSize: '32px', fill: '#000' });
-  //this.timerSeconds = 10; // 2 minutes in seconds
-  this.timerText = this.add.text(300, 16, '', { fontSize: '32px', fill: '#000' });
-
-  // this.timer = setInterval(() => {
-  //   this.timerSeconds--;
-
-  //   this.timerText.setText('Time: ' + this.timerSeconds);
-
-
-  //   if (this.timerSeconds <= 0) {
-  //     this.socket.emit('escaped');
-  //     //handleGameOver();
-  //     clearInterval(this.timer); // Stop the timer
-  //     location.reload()
-  //   }
-  // }, 1000); // Update the timer every second (1000 milliseconds)
+  // game timer display
+  this.timerText = this.add.text(1100, 48, '', { fontSize: '42px', fill: '#fa399a',  fontFamily: 'PressStart2P' });
 
 
   //   if (this.timerSeconds <= 0) {
@@ -261,27 +244,29 @@ function create() {
     $(".start").on("click", () => {
       $(".startPage").css({"display": "none"});
     });
-  
-  //   $(".restart").on("click", () => {
-  //     $(".gameOverPage").css({"display": "none"});
-  //     this.timerSeconds = 5;
-  //   });
-  
-  //   $(".restart").on("mouseenter", () => {
-  //     $(".restart").css({"font-size": "7vw"});
-  //   });
-  
-  //   $(".restart").on("mouseleave", () => {
-  //     $(".restart").css({"font-size": "6vw"});
-  //   });
-  });
 
-  this.blueScoreText = this.add.text(16, 16, '', { fontSize: '32px', fill: '#0000FF' });
-  this.redScoreText = this.add.text(584, 16, '', { fontSize: '32px', fill: '#FF0000' });
+    $(".restart").on("click", () => {
+      $(".gameOverPage").css({"display": "none"});
+      this.timerSeconds = 5;
+    });
+
+    $(".restart").on("mouseenter", () => {
+      $(".restart").css({"font-size": "7vw"});
+    });
+
+    $(".restart").on("mouseleave", () => {
+      $(".restart").css({"font-size": "6vw"});
+    });
+
+  }); 
+    
+
+  this.blueScoreText = this.add.text(200, 48, '', { fontSize: '42px', fill: '#fa399a', fontFamily: 'PressStart2P' });
+ // this.redScoreText = this.add.text(584, 16, '', { fontSize: '32px', fill: '#FF0000' });
 
   this.socket.on('scoreUpdate', function(scores) {
-    self.blueScoreText.setText('P1 Chaser: ' + scores.p1);
-    self.redScoreText.setText('P2 Escapee: ' + scores.p2);
+    self.blueScoreText.setText('Tag count: ' + Math.ceil(scores.p1));
+   //self.redScoreText.setText('P2 Escapee: ' + scores.p2);
     console.log('scores: ', scores);
 
     if (scores.p1 >= 3) {
@@ -291,21 +276,14 @@ function create() {
       })
     }
   });
+  
 
-  // Define movement variables
-  this.moveInput = 0;
-  this.moveSpeed = 1600;
-  this.acceleration = 1000;
-  this.deceleration = 500;
-
-  //this.player = this.matter.add.sprite(2000, 2000, 'star').setScale(4);
-  this.canJump = true;
-
-  const platformGround1 = this.matter.add.image(300, 948, 'stage_one_platform_ground');
+  // Platforms
+  const platformGround1 = this.matter.add.image(300, 1048, 'stage_one_platform_ground');
   platformGround1.setStatic(true);
   platformGround1.setScale(0.6); // Shrink the platform by a scale 
 
-  const platformGround2 = this.matter.add.image(768, 948, 'stage_one_platform_ground');
+  const platformGround2 = this.matter.add.image(768, 1048, 'stage_one_platform_ground');
   platformGround2.setStatic(true);
 
   platformGround2.setScale(0.6); // Shrink the platform by a scale 
@@ -345,16 +323,13 @@ function create() {
     canJump = true;
     justJumped = false;
     doubleJump = false;
+
   });
-  
+ 
 }
 
 
 function update() {
-
-  this.socket.on('twoPLayers', () => {
-
-  });
 
   setTimeout(() => {
     this.bgMusic.play({volume: 0.05, loop: true});
@@ -366,7 +341,7 @@ function update() {
     let acceleration = 1.5;
 
     this.player.setFixedRotation(true);
-
+  
     if (this.cursors.left.isDown) {
       if (this.player.body.velocity.y === 0) {
         this.player.play("run", true);
@@ -434,7 +409,7 @@ function update() {
       rotation: this.player.rotation
     };
 
-  }, 2000);
+  }, 500);
 
   this.socket.on('timeUpdate', (timer) => {
     this.timerText.setText('Time: ' + timer);
@@ -444,7 +419,14 @@ function update() {
 
   });
 
-
+  // Tagger swap on win
+  this.socket.on('playersOverlap', function() {
+    // if(this.players.team)
+    if (this.taggerPlayer) {
+      console.log('Tagger exists')
+      // Assign 
+    }
+  }); 
 
 } // end of update function 
 
@@ -477,11 +459,3 @@ function addOtherPlayers(self, playerInfo) {
   connectedPlayers++;
   // console.log('OTTERPLAYER: ', otherPlayer)
 }
-
-function reloadScreen() {
-  location.reload()
-  return
-}
-
-
-
