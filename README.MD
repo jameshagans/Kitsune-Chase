@@ -27,9 +27,24 @@ Use `SPACE` to `JUMP`
 
 Javascript, jQuery, NodeJS, Express, socket.io, phaser.js, matter.js
 
-# Wireframe 
+## Wireframe Prototype 
 
 ![wireframe](https://github.com/jameshagans/Kitsune-Chase/blob/master/public/assets/kitsune-chase-wireframe.drawio.png?raw=true)
+
+## Stretch 
+
+* Gameplay - Game lobby and matchmaking
+* Gameplay - 1 Player mode vs. AI
+* Gameplay - Chat box
+* Gameplay - Emitting Player 2 animations 
+* Gameplay - Game "Scene" implementation
+* Gameplay - Powerup items / Collectibles / Weapons
+* Gameplay - Role-switching and game rounds  
+* Gameplay - Wall-jumping / Wall-hanging
+* Gameplay - 3 and 4 Player mode 
+* Gameplay - Multiple stages 
+* Gameplay - Extra Game mode: Race
+* Package Game to playable server / website (itch.io)  
 
 # Credits
 

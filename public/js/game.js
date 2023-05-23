@@ -37,10 +37,6 @@ const playerBPosition = [];
 function preload() {
   // this.load.image('player', 'assets/sprites/player_placeholder.png');
   this.load.spritesheet('fox', '../assets/sprites/fox-V2.png', { frameWidth: 24, frameHeight: 18 });
-  this.load.image('otherPlayer', 'assets/enemyBlack5.png');
-  this.load.image('star', 'assets/star_gold.png');
-  this.load.image('other', 'assets/enemyBlack5.png');
-  // this.load.image('stage_one', 'assets/tiles/foxgate-city-day.png');
   this.load.image('stage_one_platform_ground', 'assets/tiles/foxgate-city-day-platform.PNG');
   this.load.image('stage_one_platform_roof-1-pink', 'assets/tiles/foxgate-city-day-platform-roof-1-pink.PNG');
   this.load.image('stage_one_platform_roof-2-orange', 'assets/tiles/foxgate-city-day-platform-roof-2-orange.PNG');
@@ -98,8 +94,6 @@ function create() {
     this.socket.on('playersOverlap', function() {
       // Perform game reset logic here
 
-      // Play tag sound (NOT WORKING)
-      // this.tagSound.play();
       console.log('Players are overlapping! Resetting the game...');
     
       //reset player positions
@@ -396,7 +390,7 @@ function addPlayer(self, playerInfo) {
 
 function addOtherPlayers(self, playerInfo) {
   connectedPlayers += 1;
-  const otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setDisplaySize(100, 80);
+  const otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setScale(3);
   playerBPosition.push(playerInfo.x, playerInfo.y)
   otherPlayer.playerId = playerInfo.playerId;
   self.otherPlayers.add(otherPlayer);
