@@ -96,11 +96,6 @@ function create() {
 
     // Event listener for playersOverlap event
     this.socket.on('playersOverlap', function() {
-      // Perform game reset logic here
-
-      // Play tag sound (NOT WORKING)
-      // this.tagSound.play();
-      console.log('Players are overlapping! Resetting the game...');
     
       //reset player positions
       self.player.setPosition(playerAPosition[0], playerAPosition[1]);
@@ -377,15 +372,6 @@ function update() {
 } // end of update function 
 
 
-
-
-
-
-
-
-
-
-
 function addPlayer(self, playerInfo) {
   connectedPlayers += 1;
   self.player = self.matter.add.sprite(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setScale(3);
@@ -396,7 +382,7 @@ function addPlayer(self, playerInfo) {
 
 function addOtherPlayers(self, playerInfo) {
   connectedPlayers += 1;
-  const otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setDisplaySize(100, 80);
+  const otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setScale(3);
   playerBPosition.push(playerInfo.x, playerInfo.y)
   otherPlayer.playerId = playerInfo.playerId;
   self.otherPlayers.add(otherPlayer);

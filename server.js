@@ -5,10 +5,6 @@ const io = require('socket.io')(server); // Use the Server class
 
 const players = {};
 
-const star = {
-  x: Math.floor(Math.random() * 700) + 50,
-  y: Math.floor(Math.random() * 500) + 50
-};
 const scores = {
   p1: 0,
   p2: 0
@@ -68,8 +64,7 @@ console.log(connectedPlayers)
   socket.emit('currentPlayers', players);
   console.log('Players: ', players);
 
-  // send the star object to the new player
-  // socket.emit('starLocation', star);
+
   // send the current scores
   socket.emit('scoreUpdate', scores);
 
@@ -94,8 +89,7 @@ console.log(connectedPlayers)
       setInterval(() => {
         timer--;
         if(timer <= 0) { 
-          io.emit('gameOver');
-          
+          io.emit('gameOver')
         }
         io.emit('timeUpdate', timer);
       }, 1000)
@@ -104,30 +98,6 @@ console.log(connectedPlayers)
     if(connectedPlayers > 1) {
       reduceTimer()
     }
-
-  // when a player moves, update the player data
-  // socket.on('playerMovement', function(movementData) {
-
-  //   players[socket.id].x = movementData.x;
-  //   players[socket.id].y = movementData.y;
-  //   players[socket.id].rotation = movementData.rotation;
-  //   // emit a message to all players about the player that moved
-  //   socket.broadcast.emit('playerMoved', players[socket.id]);
-
-
-
-    // socket.on('starCollected', function () {
-    //   if (players[socket.id].team === 'red') {
-    //     scores.red += 10;
-    //   } else {
-    //     scores.blue += 10;
-    //   }
-    //   star.x = Math.floor(Math.random() * 700) + 50;
-    //   star.y = Math.floor(Math.random() * 500) + 50;
-    //   io.emit('starLocation', star);
-    //   io.emit('scoreUpdate', scores);
-    // });
-  // });
 
   // Function to check if two players overlap
   function checkOverlap(player1, player2) {
@@ -169,11 +139,6 @@ console.log(connectedPlayers)
       return overlap;
     }
   });
-
-  // socket.on('escaped',() => {
-  //   scores.p2 += 0.5;
-  //   io.emit('scoreUpdate', scores);
-  // })
 
 });
 
