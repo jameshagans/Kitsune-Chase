@@ -92,9 +92,6 @@ function create() {
 
     // Event listener for playersOverlap event
     this.socket.on('playersOverlap', function() {
-      // Perform game reset logic here
-
-      console.log('Players are overlapping! Resetting the game...');
     
       //reset player positions
       self.player.setPosition(playerAPosition[0], playerAPosition[1]);
@@ -235,7 +232,7 @@ function create() {
   platformRoof_L3.setStatic(true);
   platformRoof_L3.setScale(0.3); // Shrink the platform by a scale
 
-  // LEft 4
+  // Left 4
   const platformRoof_L4 = this.matter.add.image(142, 787, 'stage_one_platform_roof-1-pink');
   platformRoof_L4.setStatic(true);
   platformRoof_L4.setScale(0.3); // Shrink the platform by a scale 
@@ -369,15 +366,6 @@ function update() {
   }); 
 
 } // end of update function 
-
-
-
-
-
-
-
-
-
 
 
 function addPlayer(self, playerInfo) {
