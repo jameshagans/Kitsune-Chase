@@ -192,25 +192,8 @@ function create() {
   this.bgMusic.play({volume: 0.05, loop: true});
   this.walkSound = this.sound.add('walk');
 
-  //Game Timer 
-  // this.timerSeconds = 5; // 2 minutes in seconds
-  // this.timerText = this.add.text(300, 16, '', { fontSize: '32px', fill: '#000' });
-  //this.timerSeconds = 10; // 2 minutes in seconds
-  this.timerText = this.add.text(300, 16, '', { fontSize: '32px', fill: '#000' });
-
-  // this.timer = setInterval(() => {
-  //   this.timerSeconds--;
-
-  //   this.timerText.setText('Time: ' + this.timerSeconds);
-
-
-  //   if (this.timerSeconds <= 0) {
-  //     this.socket.emit('escaped');
-  //     //handleGameOver();
-  //     clearInterval(this.timer); // Stop the timer
-  //     location.reload()
-  //   }
-  // }, 1000); // Update the timer every second (1000 milliseconds)
+  // game timer display
+  this.timerText = this.add.text(1100, 16, '', { fontSize: '42px', fill: '#fa399a',  fontFamily: 'PressStart2P' });
 
 
   //   if (this.timerSeconds <= 0) {
@@ -253,36 +236,18 @@ function create() {
 
   }); 
     
-  //Game Timer 
-  this.timerSeconds = 120; // 2 minutes in seconds
-  this.timerText = this.add.text(300, 16, '', { fontSize: '32px', fill: '#000' });
 
-  this.timer = setInterval(() => {
-    this.timerSeconds--;
-
-    this.timerText.setText('Time: ' + this.timerSeconds);
-
-    if (this.timerSeconds <= 0) {
-      alert('Game Over!!');
-      //handleGameOver();
-      clearInterval(this.timer); // Stop the timer
-    }
-  }, 1000); // Update the timer every second (1000 milliseconds)
-  
-
-  this.blueScoreText = this.add.text(16, 16, '', { fontSize: '32px', fill: '#0000FF' });
-  this.redScoreText = this.add.text(584, 16, '', { fontSize: '32px', fill: '#FF0000' });
+  this.blueScoreText = this.add.text(200, 16, '', { fontSize: '42px', fill: '#fa399a', fontFamily: 'PressStart2P' });
+ // this.redScoreText = this.add.text(584, 16, '', { fontSize: '32px', fill: '#FF0000' });
 
   this.socket.on('scoreUpdate', function(scores) {
-    self.blueScoreText.setText('P1 Chaser: ' + scores.p1);
-    self.redScoreText.setText('P2 Escapee: ' + scores.p2);
+    self.blueScoreText.setText('Tag count: ' + Math.ceil(scores.p1));
+   //self.redScoreText.setText('P2 Escapee: ' + scores.p2);
     console.log('scores: ', scores);
   });
-
-  //this.player = this.matter.add.sprite(2000, 2000, 'star').setScale(4);
   
 
-
+  // Platforms
   const platformGround1 = this.matter.add.image(300, 1048, 'stage_one_platform_ground');
   platformGround1.setStatic(true);
   platformGround1.setScale(0.6); // Shrink the platform by a scale 
@@ -335,10 +300,6 @@ function create() {
 
 function update() {
 
-  this.socket.on('twoPLayers', () => {
-
-  });
-
   setTimeout(() => {
     this.player.body.isSensor = false;
     this.player.body.restitution = 0;
@@ -346,6 +307,10 @@ function update() {
     this.player.body.friction = 0.15;
     const maxSpeed = 12;
     let acceleration = 1.5;
+    this.player.body.width = 20;    
+    this.player.body.height = 15;
+
+    this.player.setFixedRotation(true);
   
     if (this.cursors.left.isDown) {
       if (this.player.body.velocity.y === 0) {
@@ -414,7 +379,7 @@ function update() {
       rotation: this.player.rotation
     };
 
-  }, 2000);
+  }, 500);
 
   this.socket.on('timeUpdate', (timer) => {
     this.timerText.setText('Time: ' + timer);
@@ -457,11 +422,3 @@ function addOtherPlayers(self, playerInfo) {
   connectedPlayers++;
   // console.log('OTTERPLAYER: ', otherPlayer)
 }
-
-function reloadScreen() {
-  location.reload()
-  return
-}
-
-
-
