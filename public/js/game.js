@@ -38,6 +38,8 @@ const playerBPosition = [];
 function preload() {
   // this.load.image('player', 'assets/sprites/player_placeholder.png');
   this.load.spritesheet('fox', '../assets/sprites/fox.png', { frameWidth: 32, frameHeight: 32 });
+  this.load.spritesheet('fox1', '../assets/sprites/fox-p1.png', { frameWidth: 24, frameHeight: 18 });
+  this.load.spritesheet('fox2', '../assets/sprites/fox-p2.png', { frameWidth: 24, frameHeight: 18 });
   this.load.image('otherPlayer', 'assets/enemyBlack5.png');
   this.load.image('star', 'assets/star_gold.png');
   this.load.image('other', 'assets/enemyBlack5.png');
@@ -95,7 +97,7 @@ function create() {
     // Event listener for playersOverlap event
     this.socket.on('playersOverlap', function() {
       // Perform game reset logic here
-      this.tagSound.play();
+      // this.tagSound.play();
       console.log('Players are overlapping! Resetting the game...');
     
       //reset player positions
@@ -152,7 +154,7 @@ function create() {
   this.anims.create({
     key: "idle",
     frameRate: 8,
-    frames: this.anims.generateFrameNumbers("fox", {
+    frames: this.anims.generateFrameNumbers("fox1", {
       start: 0,
       end: 4
     }),
@@ -162,9 +164,9 @@ function create() {
   this.anims.create({
     key: "run",
     frameRate: 16,
-    frames: this.anims.generateFrameNumbers("fox", {
-      start: 28,
-      end: 35
+    frames: this.anims.generateFrameNumbers("fox1", {
+      start: 16,
+      end: 23
     }),
     repeat: -1
   });
@@ -173,21 +175,45 @@ function create() {
 
     key:"jump",
     frameRate: 8,
-    frames: this.anims.generateFrameNumbers("fox", {
-      start: 44,
-      end: 52
+    frames: this.anims.generateFrameNumbers("fox1", {
+      start: 8,
+      end: 15
     }),
   });
 
   this.anims.create({
-    key: "fall",
+    key: "idle2",
+    frameRate: 8,
+    frames: this.anims.generateFrameNumbers("fox2", {
+      start: 0,
+      end: 4
+    }),
+    repeat: -1
+  });
 
+  this.anims.create({
+    key: "run2",
+    frameRate: 16,
+    frames: this.anims.generateFrameNumbers("fox2", {
+      start: 5,
+      end: 12
+    }),
+    repeat: -1
+  });
+
+  this.anims.create({
+
+    key:"jump2",
+    frameRate: 8,
+    frames: this.anims.generateFrameNumbers("fox2", {
+      start: 13,
+      end: 20
+    }),
   });
 
 
   this.jumpSound = this.sound.add('jump');
   this.bgMusic = this.sound.add('music');
-  this.bgMusic.play({volume: 0.05, loop: true});
   this.walkSound = this.sound.add('walk');
 
   //Game Timer 
@@ -257,6 +283,13 @@ function create() {
     self.blueScoreText.setText('P1 Chaser: ' + scores.p1);
     self.redScoreText.setText('P2 Escapee: ' + scores.p2);
     console.log('scores: ', scores);
+
+    if (scores.p1 >= 3) {
+      $(() => {
+        $(".gameOverPage").css({"display" : "block"});
+        $(".gameOverText").html("P1 wins!");
+      })
+    }
   });
 
   // Define movement variables
@@ -324,14 +357,13 @@ function update() {
   });
 
   setTimeout(() => {
+    this.bgMusic.play({volume: 0.05, loop: true});
     this.player.body.isSensor = false;
     this.player.body.restitution = 0;
     this.player.body.airFriction = 0.2;
     this.player.body.friction = 0.15;
     const maxSpeed = 12;
     let acceleration = 1.5;
-    this.player.body.width = 20;    
-    this.player.body.height = 15;
 
     this.player.setFixedRotation(true);
 
@@ -430,7 +462,7 @@ function update() {
 
 function addPlayer(self, playerInfo) {
   connectedPlayers += 1;
-  self.player = self.matter.add.sprite(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setScale(4);
+  self.player = self.matter.add.sprite(playerInfo.x, playerInfo.y, 'fox1').setOrigin(0.5, 0.5).setScale(4);
   playerAPosition.push(playerInfo.x, playerInfo.y)
   connectedPlayers++;
   // console.log("SELF PLAYER", self.player)
@@ -438,7 +470,7 @@ function addPlayer(self, playerInfo) {
 
 function addOtherPlayers(self, playerInfo) {
   connectedPlayers += 1;
-  const otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setDisplaySize(100, 80);
+  const otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, 'fox1').setOrigin(0.5, 0.5).setDisplaySize(100, 80);
   playerBPosition.push(playerInfo.x, playerInfo.y)
   otherPlayer.playerId = playerInfo.playerId;
   self.otherPlayers.add(otherPlayer);
