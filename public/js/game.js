@@ -191,7 +191,7 @@ function create() {
   this.walkSound = this.sound.add('walk');
 
   // game timer display
-  this.timerText = this.add.text(1100, 16, '', { fontSize: '42px', fill: '#fa399a',  fontFamily: 'PressStart2P' });
+  this.timerText = this.add.text(1100, 48, '', { fontSize: '42px', fill: '#fa399a',  fontFamily: 'PressStart2P' });
 
 
   //   if (this.timerSeconds <= 0) {
@@ -235,7 +235,7 @@ function create() {
   }); 
     
 
-  this.blueScoreText = this.add.text(200, 16, '', { fontSize: '42px', fill: '#fa399a', fontFamily: 'PressStart2P' });
+  this.blueScoreText = this.add.text(200, 48, '', { fontSize: '42px', fill: '#fa399a', fontFamily: 'PressStart2P' });
  // this.redScoreText = this.add.text(584, 16, '', { fontSize: '32px', fill: '#FF0000' });
 
   this.socket.on('scoreUpdate', function(scores) {
