@@ -28,6 +28,7 @@ body {
   width: 100vw;
   background: url(../assets/tiles/foxgate-city-day.png) center;
   background-size: cover;
+  /* margin-top: 2rem; */
 }
 
 .gameOverPage {

@@ -1,24 +1,31 @@
 # KITSUNE CHASE - キツネ スチェイス 
+
 ## Getting started
+
 `npm install` dependencies
 `npm start nodemon` to start
 
 ## Game Summary
-`KITSUNE CHASE` is a 2D real-time multiplayer platformer where you play as a fox 
 
-On start, each player will be randomly assigned as the fox-chaser and the fox-escapee
+`KITSUNE CHASE` is a 2D real-time multiplayer platformer where you play as a fox! 
+
+![fox-gif](https://github.com/jameshagans/Kitsune-Chase/blob/master/public/assets/sprites/fox-v2.gif)
 
 Imagine tag! But you are a fox! Both of you! 
 
-Each game consists of rounds. A player wins a round if they tag the other fox within the time limit.
-Converserly, if the other player escapes being tagged after the time limit, they win the round.
-Whichever fox wins 3 rounds is declared the....TBD and is the winner of the game! 
+On start of the game, Player 1 (the host) will be "it" and will try to tag Player 2. 
+
+Each game is played to 3 tags. A player wins a game if they tag the other fox 3 times within the time limit.
+Converserly, if the other player escapes being tagged 3 times after the time limit, they win the game.
 
 ## Game Controls
 
-Use `W-S-A-D` or `ARROW KEYS` to `MOVE`
+Use `ARROW KEYS` to `MOVE`
 Use `SPACE` to `JUMP` 
 
+## Tech Stack
+
+Javascript, jQuery, NodeJS, Express, socket.io, phaser.js, matter.js
 
 # Wireframe 
 
