@@ -31,10 +31,6 @@ Use `SPACE` to `JUMP`
 
 Javascript, jQuery, NodeJS, Express, socket.io, phaser.js, matter.js
 
-## Wireframe Prototype 
-
-![wireframe](https://github.com/jameshagans/Kitsune-Chase/blob/master/public/assets/kitsune-chase-wireframe.drawio.png?raw=true)
-
 ## Stretch 
 
 * Gameplay - Game lobby and matchmaking
@@ -54,3 +50,4 @@ Javascript, jQuery, NodeJS, Express, socket.io, phaser.js, matter.js
 
 * fox sprite: https://elthen.itch.io/
 * tilesheet: https://penzilla.itch.io/japanese-city-kawaii-tileset, https://www.patreon.com/penzilla 
+* Original score "Foxyvania" - Kevin Cho 
