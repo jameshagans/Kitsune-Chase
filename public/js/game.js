@@ -38,8 +38,12 @@ const playerBPosition = [];
 function preload() {
   // this.load.image('player', 'assets/sprites/player_placeholder.png');
   // this.load.spritesheet('fox', '../assets/sprites/fox-V2.png', { frameWidth: 24, frameHeight: 18 });
+<<<<<<< HEAD
   this.load.spritesheet('fox', '../assets/sprites/fox-V3.png', { frameWidth: 26, frameHeight: 19 });ß
   this.load.spritesheet('fox2', '../assets/sprites/fox-V2-pink.png', { frameWidth: 24, frameHeight: 18 });
+=======
+  this.load.spritesheet('fox', '../assets/sprites/fox-V4.png', { frameWidth: 26, frameHeight: 20 });
+>>>>>>> 4f43a5063f40946fd91c838e263b0f63c6fd7eab
   this.load.image('stage_one_platform_ground', 'assets/tiles/foxgate-city-day-platform.PNG');
   this.load.image('stage_one_platform_roof-1-pink', 'assets/tiles/foxgate-city-day-platform-roof-1-pink.PNG');
   this.load.image('stage_one_platform_roof-2-orange', 'assets/tiles/foxgate-city-day-platform-roof-2-orange.PNG');
