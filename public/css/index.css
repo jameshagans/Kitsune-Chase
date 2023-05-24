@@ -45,9 +45,13 @@ body {
 }
 
 .start {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   z-index: 7;
-  margin-top: 12vh;
-  margin-left: 19vw;
+  margin-top: 5vh;
+  /* margin-left: 19vw; */
   font-family: 'Press Start 2P', cursive;
   font-size: 5vw;
   background-color: transparent;
@@ -57,9 +61,13 @@ body {
 }
 
 .title {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   z-index: 7;
   margin-top: 20vh;
-  margin-left: 17vw;
+  /* margin-left: 17vw; */
   font-family: 'Press Start 2P', cursive;
   font-size: 5vw;
   background-color: transparent;
@@ -69,9 +77,13 @@ body {
 }
 
 .gameOver {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   z-index: 7;
   margin-top: 20vh;
-  margin-left: 27vw;
+  /* margin-left: 27vw; */
   font-family: 'Press Start 2P', cursive;
   font-size: 5vw;
   background-color: transparent;
@@ -81,9 +93,12 @@ body {
 }
 
 .gameOverText {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   font-family: 'Press Start 2P', cursive;
   margin-top: 8vh;
-  margin-left: 10vw;
+  /* margin-left: 10vw; */
   font-size: 3vw;
   color: rgb(255, 255, 255);
 }
@@ -91,7 +106,7 @@ body {
 .restart {
   z-index: 7;
   margin-top: 4vh;
-  margin-left: 6vw;
+  /* margin-left: 6vw; */
   font-family: 'Press Start 2P', cursive;
   font-size: 3vw;
   background-color: transparent;

@@ -153,11 +153,11 @@ function create() {
   this.themeMusic = this.sound.add('theme');
   this.walkSound = this.sound.add('walk');
   // this.bgMusic.play({volume: 0.05, loop: true});
-  this.themeMusic.play({volume: 0.1, loop: true});
+  this.themeMusic.play({volume: 0.5, loop: true});
   this.startSound = this.sound.add('start');
   this.endSound = this.sound.add('end');
   // game timer display
-  this.timerText = this.add.text(550, 48, '', { fontSize: '42px', fill: '#fa399a', fontFamily: 'PressStart2P' });
+  this.timerText = this.add.text(550, 48, '', { fontSize: '50px', fill: '#FF4F42', fontFamily: 'PressStart2P' });
 
   this.socket.on('gameOver', () => {
     $(".gameOverPage").css({ "display": "block" });
