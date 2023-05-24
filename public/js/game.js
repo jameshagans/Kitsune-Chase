@@ -81,7 +81,7 @@ function create() {
     });
   });
 
-  
+
   this.socket.on('playerMoved', function(playerInfo) {
     self.otherPlayers.getChildren().forEach(function(otherPlayer) {
       if (playerInfo.playerId === otherPlayer.playerId) {
@@ -91,13 +91,13 @@ function create() {
     });
   });
 
-    // Event listener for playersOverlap event
-    this.socket.on('playersOverlap', function() {
-    
-      //reset player positions
-      self.player.setPosition(playerAPosition[0], playerAPosition[1]);
-      self.otherPlayers.getChildren().forEach(function(otherPlayer) {
-        otherPlayer.setPosition(playerBPosition[0], playerBPosition[1]);
+  // Event listener for playersOverlap event
+  this.socket.on('playersOverlap', function() {
+
+    //reset player positions
+    self.player.setPosition(playerAPosition[0], playerAPosition[1]);
+    self.otherPlayers.getChildren().forEach(function(otherPlayer) {
+      otherPlayer.setPosition(playerBPosition[0], playerBPosition[1]);
     });
   });
 
@@ -136,7 +136,7 @@ function create() {
   });
 
   this.anims.create({
-    key:"jump",
+    key: "jump",
     frameRate: 8,
     frames: this.anims.generateFrameNumbers("fox", {
       start: 8,
@@ -153,60 +153,64 @@ function create() {
   this.themeMusic.play({volume: 0.2, loop: true});
   this.startSound = this.sound.add('start');
   // game timer display
-  this.timerText = this.add.text(1100, 75, '', { padding: '1rem', fontSize: '42px', fill: '#fa399a',  fontFamily: 'PressStart2P' });
+  this.timerText = this.add.text(1100, 48, '', { fontSize: '42px', fill: '#fa399a',  fontFamily: 'PressStart2P' });
 
-  
   this.socket.on('gameOver', () => {
-    $(".gameOverPage").css({"display" : "block"});
+    $(".gameOverPage").css({ "display": "block" });
     $(".gameOverText").html("P2 wins!");
-  })
+  });
 
   $(() => {
     $(".start").on("mouseenter", () => {
-      $(".start").css({"font-size": "6vw"});
+      $(".start").css({ "font-size": "6vw" });
     });
-  
+
     $(".start").on("mouseleave", () => {
-      $(".start").css({"font-size": "5vw"});
+      $(".start").css({ "font-size": "5vw" });
     });
-  
+
     $(".start").on("click", () => {
-      this.startSound.play({volume: 0.5});
-      $(".startPage").css({"display": "none"});
+      this.startSound.play({ volume: 0.5 });
+      $(".startPage").css({ "display": "none" });
     });
 
     $(".restart").on("click", () => {
-      $(".gameOverPage").css({"display": "none"});
-      this.startSound.play({volume: 0.5});
+      $(".gameOverPage").css({ "display": "none" });
+      this.startSound.play({ volume: 0.5 });
+      this.socket.emit('restart');
+      self.player.setPosition(playerAPosition[0], playerAPosition[1]);
+      self.otherPlayers.getChildren().forEach(function(otherPlayer) {
+        otherPlayer.setPosition(playerBPosition[0], playerBPosition[1]);
+      });
     });
 
     $(".restart").on("mouseenter", () => {
-      $(".restart").css({"font-size": "4vw"});
+      $(".restart").css({ "font-size": "4vw" });
     });
 
     $(".restart").on("mouseleave", () => {
-      $(".restart").css({"font-size": "3vw"});
+      $(".restart").css({ "font-size": "3vw" });
     });
 
-  }); 
-    
+  });
+
 
   this.blueScoreText = this.add.text(200, 48, '', { fontSize: '42px', fill: '#fa399a', fontFamily: 'PressStart2P' });
- // this.redScoreText = this.add.text(584, 16, '', { fontSize: '32px', fill: '#FF0000' });
+  // this.redScoreText = this.add.text(584, 16, '', { fontSize: '32px', fill: '#FF0000' });
 
   this.socket.on('scoreUpdate', function(scores) {
     self.blueScoreText.setText('Tag count: ' + Math.ceil(scores.p1));
-   //self.redScoreText.setText('P2 Escapee: ' + scores.p2);
+    //self.redScoreText.setText('P2 Escapee: ' + scores.p2);
     console.log('scores: ', scores);
 
     if (scores.p1 >= 3) {
       $(() => {
-        $(".gameOverPage").css({"display" : "block"});
+        $(".gameOverPage").css({ "display": "block" });
         $(".gameOverText").html("P1 wins!");
-      })
+      });
     }
   });
-  
+
 
   // Platforms
 
@@ -219,7 +223,7 @@ function create() {
   const platformRoof_R2 = this.matter.add.image(1090, 687, 'stage_one_platform_roof-1-pink');
   platformRoof_R2.setStatic(true);
   platformRoof_R2.setScale(0.3); // Shrink the platform by a scale 
- 
+
   // Left 1
   const platformRoof_L1 = this.matter.add.image(380, 525, 'stage_one_platform_roof-2-orange');
   platformRoof_L1.setStatic(true);
@@ -239,7 +243,7 @@ function create() {
   const platformRoof_L4 = this.matter.add.image(142, 787, 'stage_one_platform_roof-1-pink');
   platformRoof_L4.setStatic(true);
   platformRoof_L4.setScale(0.3); // Shrink the platform by a scale 
-  
+
   // Center 1
   const platformRoof_C1 = this.matter.add.image(906, 261, 'stage_one_platform_roof-2-orange');
   platformRoof_C1.setStatic(true);
@@ -249,24 +253,24 @@ function create() {
   const platformRoof_C2 = this.matter.add.image(1005, 261, 'stage_one_platform_roof-2-orange');
   platformRoof_C2.setStatic(true);
   platformRoof_C2.setScale(0.3); // Shrink the platform by a scale
-  
+
   // Add click event listener to the document for ease of finding platform placement
   document.addEventListener('click', function(event) {
-  // Get the coordinates of the mouse pointer relative to the document
-  const mouseX = event.clientX;
-  const mouseY = event.clientY;
-  
-  // Log the coordinates to the console
-  console.log('Mouse coordinates:', mouseX, mouseY);
+    // Get the coordinates of the mouse pointer relative to the document
+    const mouseX = event.clientX;
+    const mouseY = event.clientY;
 
-});
+    // Log the coordinates to the console
+    console.log('Mouse coordinates:', mouseX, mouseY);
+
+  });
 
   this.matter.world.on('collisionstart', function(event, bodyA, bodyB) {
     canJump = true;
     justJumped = false;
     doubleJump = false;
 
-  }); 
+  });
 }
 
 
@@ -281,7 +285,7 @@ function update() {
     let acceleration = 1.5;
 
     this.player.setFixedRotation(true);
-  
+
     if (this.cursors.left.isDown) {
       if (this.player.body.velocity.y === 0) {
         this.player.play("run", true);
@@ -319,7 +323,7 @@ function update() {
         this.player.setVelocityY(-30); // Adjust the desired jump velocity
         canJump = false;
         justJumped = true;
-        
+
       }
 
       if (doubleJump) {
@@ -359,14 +363,7 @@ function update() {
 
   });
 
-  // Tagger swap on win
-  this.socket.on('playersOverlap', function() {
-    // if(this.players.team)
-    if (this.taggerPlayer) {
-      console.log('Tagger exists')
-      // Assign 
-    }
-  }); 
+
 
 } // end of update function 
 
@@ -374,7 +371,7 @@ function update() {
 function addPlayer(self, playerInfo) {
   connectedPlayers += 1;
   self.player = self.matter.add.sprite(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setScale(3);
-  playerAPosition.push(playerInfo.x, playerInfo.y)
+  playerAPosition.push(playerInfo.x, playerInfo.y);
   connectedPlayers++;
   // console.log("SELF PLAYER", self.player)
 }
@@ -382,7 +379,7 @@ function addPlayer(self, playerInfo) {
 function addOtherPlayers(self, playerInfo) {
   connectedPlayers += 1;
   const otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setScale(3);
-  playerBPosition.push(playerInfo.x, playerInfo.y)
+  playerBPosition.push(playerInfo.x, playerInfo.y);
   otherPlayer.playerId = playerInfo.playerId;
   self.otherPlayers.add(otherPlayer);
   connectedPlayers++;

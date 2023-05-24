@@ -10,7 +10,7 @@ const scores = {
   p2: 0
 };
 
-let timer = 90; 
+let timer = 60; 
 
 let connectedPlayers = 0;
 
@@ -140,9 +140,13 @@ console.log(connectedPlayers)
     }
   });
 
+  socket.on('restart', () => {
+    scores.p1 = 0; 
+    timer = 60; 
+    io.emit('scoreUpdate', scores);
+    io.emit('timeUpdate', timer);
+  })
 });
-
-
 
 
 server.listen(3000, function() {
