@@ -42,6 +42,7 @@ function preload() {
   this.load.image('stage_one_platform_roof-2-orange', 'assets/tiles/foxgate-city-day-platform-roof-2-orange.PNG');
   this.load.audio('jump', '../assets/sounds/jump-3.wav');
   this.load.audio('music', '../assets/sounds/music.mp3');
+  this.load.audio('theme', '../assets/sounds/foxyvaniaV3.mp3');
   this.load.audio('walk', '../assets/sounds/run-sound-1.wav');
   this.load.audio('start', '../assets/sounds/start.mp3');
   this.load.audio('end', '../assets/sounds/tag-sound-2.wav');
@@ -146,11 +147,13 @@ function create() {
 
   this.jumpSound = this.sound.add('jump');
   this.bgMusic = this.sound.add('music');
+  this.themeMusic = this.sound.add('theme');
   this.walkSound = this.sound.add('walk');
-  this.bgMusic.play({volume: 0.05, loop: true});
+  // this.bgMusic.play({volume: 0.05, loop: true});
+  this.themeMusic.play({volume: 0.2, loop: true});
   this.startSound = this.sound.add('start');
   // game timer display
-  this.timerText = this.add.text(1100, 48, '', { fontSize: '42px', fill: '#fa399a',  fontFamily: 'PressStart2P' });
+  this.timerText = this.add.text(1100, 75, '', { padding: '1rem', fontSize: '42px', fill: '#fa399a',  fontFamily: 'PressStart2P' });
 
   
   this.socket.on('gameOver', () => {
