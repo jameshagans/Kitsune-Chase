@@ -31,6 +31,7 @@ let inAir = false;
 let doubleJump = false;
 let isReloaded = false;
 let connectedPlayers = 0;
+let playEndSound = true;
 const playerAPosition = [];
 const playerBPosition = [];
 
@@ -152,12 +153,17 @@ function create() {
   // this.bgMusic.play({volume: 0.05, loop: true});
   this.themeMusic.play({volume: 0.2, loop: true});
   this.startSound = this.sound.add('start');
+  this.endSound = this.sound.add('end');
   // game timer display
   this.timerText = this.add.text(1100, 48, '', { fontSize: '42px', fill: '#fa399a',  fontFamily: 'PressStart2P' });
 
   this.socket.on('gameOver', () => {
     $(".gameOverPage").css({ "display": "block" });
     $(".gameOverText").html("P2 wins!");
+    if (playEndSound) {
+      this.endSound.play();
+      playEndSound = false;
+    };
   });
 
   $(() => {
@@ -207,6 +213,10 @@ function create() {
       $(() => {
         $(".gameOverPage").css({ "display": "block" });
         $(".gameOverText").html("P1 wins!");
+        if (playEndSound) {
+          this.endSound.play();
+          playEndSound = false;
+        };
       });
     }
   });
