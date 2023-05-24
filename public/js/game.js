@@ -38,7 +38,8 @@ const playerBPosition = [];
 function preload() {
   // this.load.image('player', 'assets/sprites/player_placeholder.png');
   // this.load.spritesheet('fox', '../assets/sprites/fox-V2.png', { frameWidth: 24, frameHeight: 18 });
-  this.load.spritesheet('fox', '../assets/sprites/fox-V4.png', { frameWidth: 26, frameHeight: 20 });
+  this.load.spritesheet('fox', '../assets/sprites/fox-V3.png', { frameWidth: 26, frameHeight: 19 });
+  this.load.spritesheet('fox2', '../assets/sprites/fox-V2-pink.png', { frameWidth: 24, frameHeight: 18 });
   this.load.image('stage_one_platform_ground', 'assets/tiles/foxgate-city-day-platform.PNG');
   this.load.image('stage_one_platform_roof-1-pink', 'assets/tiles/foxgate-city-day-platform-roof-1-pink.PNG');
   this.load.image('stage_one_platform_roof-2-orange', 'assets/tiles/foxgate-city-day-platform-roof-2-orange.PNG');
@@ -156,7 +157,7 @@ function create() {
   this.startSound = this.sound.add('start');
   this.endSound = this.sound.add('end');
   // game timer display
-  this.timerText = this.add.text(1100, 48, '', { fontSize: '42px', fill: '#fa399a',  fontFamily: 'PressStart2P' });
+  this.timerText = this.add.text(550, 48, '', { fontSize: '42px', fill: '#fa399a', fontFamily: 'PressStart2P' });
 
   this.socket.on('gameOver', () => {
     $(".gameOverPage").css({ "display": "block" });
@@ -202,15 +203,15 @@ function create() {
   });
 
 
-  this.blueScoreText = this.add.text(200, 48, '', { fontSize: '42px', fill: '#fa399a', fontFamily: 'PressStart2P' });
+  // this.blueScoreText = this.add.text(200, 48, '', { fontSize: '42px', fill: '#fa399a', fontFamily: 'PressStart2P' });
   // this.redScoreText = this.add.text(584, 16, '', { fontSize: '32px', fill: '#FF0000' });
 
   this.socket.on('scoreUpdate', function(scores) {
-    self.blueScoreText.setText('Tag count: ' + Math.ceil(scores.p1));
+    //self.blueScoreText.setText('Tag count: ' + scores.p1);
     //self.redScoreText.setText('P2 Escapee: ' + scores.p2);
     console.log('scores: ', scores);
 
-    if (scores.p1 >= 3) {
+    if (scores.p1 >= 1) {
       $(() => {
         $(".gameOverPage").css({ "display": "block" });
         $(".gameOverText").html("P1 wins!");
@@ -369,10 +370,10 @@ function update() {
   this.socket.on('timeUpdate', (timer) => {
     this.timerText.setText('Time: ' + timer);
   });
-  this.socket.on('gameOver', () => {
-    this.timerText.visible = false;
+  // this.socket.on('gameOver', () => {
+  //   this.timerText.visible = false;
 
-  });
+  // });
 
 
 
@@ -384,15 +385,13 @@ function addPlayer(self, playerInfo) {
   self.player = self.matter.add.sprite(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setScale(3);
   playerAPosition.push(playerInfo.x, playerInfo.y);
   connectedPlayers++;
-  // console.log("SELF PLAYER", self.player)
 }
 
 function addOtherPlayers(self, playerInfo) {
   connectedPlayers += 1;
-  const otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, 'fox').setOrigin(0.5, 0.5).setScale(3);
+  const otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, 'fox2').setOrigin(0.5, 0.5).setScale(3);
   playerBPosition.push(playerInfo.x, playerInfo.y);
   otherPlayer.playerId = playerInfo.playerId;
   self.otherPlayers.add(otherPlayer);
   connectedPlayers++;
-  // console.log('OTTERPLAYER: ', otherPlayer)
 }

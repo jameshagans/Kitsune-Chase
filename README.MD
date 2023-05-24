@@ -9,14 +9,18 @@
 
 `KITSUNE CHASE` is a 2D real-time multiplayer platformer where you play as a fox! 
 
-![fox-gif](https://github.com/jameshagans/Kitsune-Chase/blob/master/public/assets/sprites/fox-v2.gif)
+![screenshot](https://github.com/jameshagans/Kitsune-Chase/blob/master/public/assets/sprites/fox-v4.gif)
 
 Imagine tag! But you are a fox! Both of you! 
 
+![GAME](https://github.com/jameshagans/Kitsune-Chase/blob/master/public/assets/map.gif)
+![START](https://github.com/jameshagans/Kitsune-Chase/blob/master/public/assets/screenshot1.PNG)
+![GAMEOVER](https://github.com/jameshagans/Kitsune-Chase/blob/master/public/assets/screenshot2.PNG)
+
 On start of the game, Player 1 (the host) will be "it" and will try to tag Player 2. 
 
-Each game is played to 3 tags. A player wins a game if they tag the other fox 3 times within the time limit.
-Converserly, if the other player escapes being tagged 3 times after the time limit, they win the game.
+Each game is sudden death. Player 1 wins the game if they tag the other fox within the time limit.
+If player 2 escapes being tagged for 30 seconds, they win the game.
 
 ## Game Controls
 

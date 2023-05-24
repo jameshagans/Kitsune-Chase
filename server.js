@@ -10,7 +10,7 @@ const scores = {
   p2: 0
 };
 
-let timer = 60; 
+let timer = 30; 
 
 let connectedPlayers = 0;
 
@@ -142,7 +142,7 @@ console.log(connectedPlayers)
 
   socket.on('restart', () => {
     scores.p1 = 0; 
-    timer = 60; 
+    timer = 30; 
     io.emit('scoreUpdate', scores);
     io.emit('timeUpdate', timer);
   })
