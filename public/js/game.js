@@ -152,7 +152,7 @@ function create() {
   this.themeMusic = this.sound.add('theme');
   this.walkSound = this.sound.add('walk');
   // this.bgMusic.play({volume: 0.05, loop: true});
-  this.themeMusic.play({volume: 0.2, loop: true});
+  this.themeMusic.play({volume: 0.1, loop: true});
   this.startSound = this.sound.add('start');
   this.endSound = this.sound.add('end');
   // game timer display
