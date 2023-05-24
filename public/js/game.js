@@ -38,7 +38,7 @@ const playerBPosition = [];
 function preload() {
   // this.load.image('player', 'assets/sprites/player_placeholder.png');
   // this.load.spritesheet('fox', '../assets/sprites/fox-V2.png', { frameWidth: 24, frameHeight: 18 });
-  this.load.spritesheet('fox', '../assets/sprites/fox-V3.png', { frameWidth: 26, frameHeight: 19 });ß
+  this.load.spritesheet('fox', '../assets/sprites/fox-V3.png', { frameWidth: 26, frameHeight: 19 });
   this.load.spritesheet('fox2', '../assets/sprites/fox-V2-pink.png', { frameWidth: 24, frameHeight: 18 });
   this.load.image('stage_one_platform_ground', 'assets/tiles/foxgate-city-day-platform.PNG');
   this.load.image('stage_one_platform_roof-1-pink', 'assets/tiles/foxgate-city-day-platform-roof-1-pink.PNG');
@@ -207,7 +207,7 @@ function create() {
   // this.redScoreText = this.add.text(584, 16, '', { fontSize: '32px', fill: '#FF0000' });
 
   this.socket.on('scoreUpdate', function(scores) {
-    self.blueScoreText.setText('Tag count: ' + scores.p1);
+    //self.blueScoreText.setText('Tag count: ' + scores.p1);
     //self.redScoreText.setText('P2 Escapee: ' + scores.p2);
     console.log('scores: ', scores);
 
